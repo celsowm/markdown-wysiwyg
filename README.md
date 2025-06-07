@@ -42,7 +42,7 @@ A versatile JavaScript-based Markdown editor that offers a seamless experience b
 ## Demo
 
 You can run the `index.html` file in your browser to see a live demonstration of the editor.  
-Want to host a live version? GitHub Pages is a good option.
+Or online here: [demo](https://celsowm.github.io/markdown-wysiwyg/)
 
 ## Installation / Setup
 

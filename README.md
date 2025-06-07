@@ -3,6 +3,9 @@
 
 A versatile JavaScript-based Markdown editor that offers a seamless experience by allowing users to switch between a What-You-See-Is-What-You-Get (WYSIWYG) visual editor and a raw Markdown text editor. It comes with a customizable toolbar, undo/redo functionality, and intelligent Markdown-to-HTML (and vice-versa) conversion.
 
+![image](https://github.com/user-attachments/assets/c5c9b670-adcd-4e69-b630-8a15c7fef9cd)
+
+
 ## Features
 
 - **Dual Editing Modes:**

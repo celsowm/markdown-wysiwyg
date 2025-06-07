@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor Markdown Avançado</title>
+    <link rel="stylesheet" href="dist/editor.css">
+    <style id="editor-demo-styles">
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            /* Adicionado padding ao container para não colar o editor nas bordas */
+            padding: 20px;
+        }
+
+        h1.main-title {
+            text-align: center;
+            color: #444;
+            /* Removido padding para não duplicar com o do container */
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        p.description {
+            text-align: center;
+            color: #555;
+            /* Removido padding para não duplicar com o do container */
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+    </style>
+    <!-- Dependência Externa (Marked.js) - Deve vir antes do script do editor -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="dist/editor.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="main-title">Editor Markdown Avançado</h1>
+        <p class="description">Alterne entre os modos WYSIWYG e Markdown usando as abas abaixo.</p>
+        <div id="myEditor"></div> <!-- O editor será renderizado aqui -->
+    </div>
+    <script id="editor-demo-script">
+        document.addEventListener('DOMContentLoaded', () => {
+            const editor = new MarkdownWYSIWYG('myEditor', {
+                tableGridMaxRows: 8,
+                tableGridMaxCols: 8,
+                initialValue: `## Bem-vindo ao Editor Avançado!
+
+Use as **abas** abaixo para alternar entre os modos de edição.
+A barra de ferramentas foi *levemente* ajustada. ***Negrito e Itálico juntos!***
+
+Este texto está ~~riscado~~.
+Este texto está ~~ com espaços ~~.
+
+| Cabeçalho 1 Exemplo | Cabeçalho 2 Exemplo |
+| --- | --- |
+| Célula 1.1 com **negrito** e *itálico* | Célula 1.2 com um [link](https://example.com) |
+| Célula 2.1 <br> com quebra de linha | Célula 2.2 com \`código inline\` |
+
+---
+
+### Demonstração de Lista e Código
+- Item de lista 1
+- Item de lista 2
+  - Subitem 2.1
+  - Subitem 2.2
+    - Sub-subitem 2.2.1
+- Item de lista 3
+  Com múltiplas linhas
+  para testar a conversão.
+- Item final
+
+\`\`\`javascript
+function helloWorld() {
+  console.log("Olá, Mundo do Markdown!");
+}
+\`\`\`
+
+Texto com \`código em linha\` e um [link para o Google](https://google.com).
+
+> Uma citação para mostrar o estilo de bloco de citação.
+> Pode ter múltiplas linhas.
+> E mais uma.
+
+Mais conteúdo para testar o scroll:
+1. Item ordenado
+2. Outro item
+3. Mais um item
+    1. Subitem ordenado
+    2. Outro subitem
+4. Item
+5. Item
+6. Item
+7. Item
+8. Item
+9. Item
+10. Item
+11. Item
+12. Item
+13. Item
+14. Item
+15. Item
+`,
+                onUpdate: (markdownContent) => {
+                    // console.log("Conteúdo Markdown Atualizado:");
+                    // console.log(markdownContent); 
+                }
+            });
+
+            // Exemplo de como acessar o editor globalmente se necessário (não recomendado para produção)
+            // window.myAdvancedEditor = editor; 
+        });
+    </script>
+</body>
+
+</html>

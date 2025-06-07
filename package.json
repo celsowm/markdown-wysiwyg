@@ -1,0 +1,9 @@
+{
+  "name": "markdown-wysiwyg",
+  "version": "1.0.0",
+  "description": "Editor Markdown WYSIWYG com alternância entre modo visual e código",
+  "main": "dist/editor.js",
+  "keywords": ["markdown", "editor", "wysiwyg", "javascript"],
+  "author": "Celso Araujo Fontes",
+  "license": "MIT"
+}

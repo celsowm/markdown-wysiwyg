@@ -6,6 +6,7 @@
     display: flex;
     flex-direction: column;
     position: relative;
+    /* Needed for absolute positioning of popups */
 }
 
 .md-toolbar {
@@ -46,9 +47,7 @@
 
 .md-toolbar-button svg {
     width: 18px;
-    /* Icon size */
     height: 18px;
-    /* Icon size */
     vertical-align: middle;
 }
 
@@ -189,6 +188,7 @@
     padding: 8px 10px;
     text-align: left;
     min-width: 50px;
+    /* Ensures cells are clickable */
 }
 
 .md-editable-area th {
@@ -196,10 +196,13 @@
     font-weight: bold;
 }
 
+/* Ensure empty cells are visible and have a minimum height for cursor interaction */
 .md-editable-area td:empty::before,
 .md-editable-area th:empty::before {
     content: "\200B";
+    /* Zero-width space */
 }
+
 
 .md-markdown-area {
     font-family: 'Menlo', 'Consolas', monospace;
@@ -233,6 +236,7 @@
     font-weight: bold;
     border-bottom: 2px solid #007bff;
     margin-bottom: -1px;
+    /* Overlaps border for seamless look */
 }
 
 .md-tab-button:hover:not(.active) {
@@ -274,4 +278,41 @@
     margin-top: 8px;
     font-size: 13px;
     color: #555;
+}
+
+.md-contextual-table-toolbar {
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    padding: 5px;
+    z-index: 1060;
+    border-radius: 4px;
+    display: none;
+    gap: 3px;
+    flex-wrap: nowrap;
+}
+
+.md-contextual-table-toolbar-button {
+    padding: 4px 6px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    border-radius: 3px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    min-height: 28px;
+    transition: background-color 0.2s ease;
+}
+
+.md-contextual-table-toolbar-button:hover {
+    background-color: #e9e9e9;
+    border-color: #bbb;
+}
+
+.md-contextual-table-toolbar-button svg {
+    width: 16px;
+    height: 16px;
 }

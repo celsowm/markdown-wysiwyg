@@ -6,13 +6,17 @@ const ICON_STRIKETHROUGH = `<svg viewBox="0 0 24 24" fill="none" stroke="current
 const ICON_LINK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`;
 const ICON_UL = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="4" cy="6" r="1" fill="currentColor"/><circle cx="4" cy="12" r="1" fill="currentColor"/><circle cx="4" cy="18" r="1" fill="currentColor"/></svg>`;
 const ICON_OL = `<svg viewBox="0 0 24 24" fill="none"><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="10" y1="6" x2="22" y2="6"/><line x1="10" y1="12" x2="22" y2="12"/><line x1="10" y1="18" x2="22" y2="18"/></g><g fill="currentColor" font-family="sans-serif" font-size="6" text-anchor="middle" dominant-baseline="middle"><text x="5" y="6.5">1</text><text x="5" y="12.5">2</text><text x="5" y="18.5">3</text></g></svg>`;
-const ICON_OUTDENT = `<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 8 3 12 7 16"></polyline><line x1="21" y1="12" x2="3" y2="12"></line><line x1="21" y1="5" x2="9" y2="5"></line><line x1="21" y1="19" x2="9" y2="19"></line></svg>`; // A more specific outdent
-const ICON_INDENT = `<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 8 21 12 17 16"></polyline><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="5" x2="15" y2="5"></line><line x1="3" y1="19" x2="15" y2="19"></line></svg>`; // A more specific indent
+const ICON_OUTDENT = `<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 8 3 12 7 16"></polyline><line x1="21" y1="12" x2="3" y2="12"></line><line x1="21" y1="5" x2="9" y2="5"></line><line x1="21" y1="19" x2="9" y2="19"></line></svg>`;
+const ICON_INDENT = `<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 8 21 12 17 16"></polyline><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="5" x2="15" y2="5"></line><line x1="3" y1="19" x2="15" y2="19"></line></svg>`;
 const ICON_BLOCKQUOTE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1zM15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>`;
 const ICON_HR = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/></svg>`;
 const ICON_TABLE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>`;
 const ICON_CODEBLOCK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16,18 22,12 16,6"/><polyline points="8,6 2,12 8,18"/></svg>`;
-const ICON_INLINECODE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10.75 4.75L9 19.25"/><path d="M15.25 4.75L13.5 19.25"/><path d="M19.25 7.5L22 10.5L19.25 13.5"/><path d="M4.75 7.5L2 10.5L4.75 13.5"/></svg>`; // A slightly different code icon for variety
+const ICON_INLINECODE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10.75 4.75L9 19.25"/><path d="M15.25 4.75L13.5 19.25"/><path d="M19.25 7.5L22 10.5L19.25 13.5"/><path d="M4.75 7.5L2 10.5L4.75 13.5"/></svg>`;
+const ICON_TABLE_INSERT_ROW_ABOVE = `<svg viewBox="0 0 24 24" fill="none"><g fill="#4a90e2"><rect x="3" y="10" width="5" height="3" rx=".5"/><rect x="9" y="10" width="5" height="3" rx=".5"/><rect x="15" y="10" width="5" height="3" rx=".5"/></g><g fill="#999"><rect x="3" y="15" width="5" height="3" rx=".5"/><rect x="9" y="15" width="5" height="3" rx=".5"/><rect x="15" y="15" width="5" height="3" rx=".5"/></g><path stroke="#4a90e2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 8V4M10 5l2-2 2 2"/></svg>`;
+const ICON_TABLE_INSERT_ROW_BELOW = `<svg viewBox="0 0 24 24" fill="none"><g fill="#999"><rect x="3" y="6" width="5" height="3" rx=".5"/><rect x="9" y="6" width="5" height="3" rx=".5"/><rect x="15" y="6" width="5" height="3" rx=".5"/></g><g fill="#4a90e2"><rect x="3" y="11" width="5" height="3" rx=".5"/><rect x="9" y="11" width="5" height="3" rx=".5"/><rect x="15" y="11" width="5" height="3" rx=".5"/></g><path stroke="#4a90e2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 16v4M10 19l2 2 2-2"/></svg>`;
+const ICON_TABLE_INSERT_COL_LEFT = `<svg viewBox="0 0 24 24" fill="none"><g fill="#4a90e2"><rect x="9" y="6" width="3" height="4" rx=".5"/><rect x="9" y="11" width="3" height="4" rx=".5"/><rect x="9" y="16" width="3" height="4" rx=".5"/></g><g fill="#999"><rect x="14" y="6" width="3" height="4" rx=".5"/><rect x="14" y="11" width="3" height="4" rx=".5"/><rect x="14" y="16" width="3" height="4" rx=".5"/></g><path stroke="#4a90e2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M7 12H3M4 10l-2 2 2 2"/></svg>`;
+const ICON_TABLE_INSERT_COL_RIGHT = `<svg viewBox="0 0 24 24" fill="none"><g fill="#999"><rect x="7" y="6" width="3" height="4" rx=".5"/><rect x="7" y="11" width="3" height="4" rx=".5"/><rect x="7" y="16" width="3" height="4" rx=".5"/></g><g fill="#4a90e2"><rect x="12" y="6" width="3" height="4" rx=".5"/><rect x="12" y="11" width="3" height="4" rx=".5"/><rect x="12" y="16" width="3" height="4" rx=".5"/></g><path stroke="#4a90e2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M17 12h4M20 10l2 2-2 2"/></svg>`;
 
 class MarkdownWYSIWYG {
     constructor(elementId, options = {}) {
@@ -25,8 +29,8 @@ class MarkdownWYSIWYG {
             showToolbar: true,
             buttons: [
                 { id: 'h1', label: ICON_HEADING, title: 'Cabeçalho 1', type: 'block', mdPrefix: '# ', execCommand: 'formatBlock', value: 'H1' },
-                { id: 'h2', label: ICON_HEADING, title: 'Cabeçalho 2', type: 'block', mdPrefix: '## ', execCommand: 'formatBlock', value: 'H2' }, // Reusing ICON_HEADING
-                { id: 'h3', label: ICON_HEADING, title: 'Cabeçalho 3', type: 'block', mdPrefix: '### ', execCommand: 'formatBlock', value: 'H3' }, // Reusing ICON_HEADING
+                { id: 'h2', label: ICON_HEADING, title: 'Cabeçalho 2', type: 'block', mdPrefix: '## ', execCommand: 'formatBlock', value: 'H2' },
+                { id: 'h3', label: ICON_HEADING, title: 'Cabeçalho 3', type: 'block', mdPrefix: '### ', execCommand: 'formatBlock', value: 'H3' },
                 { id: 'bold', label: ICON_BOLD, title: 'Negrito', execCommand: 'bold', type: 'inline', mdPrefix: '**', mdSuffix: '**' },
                 { id: 'italic', label: ICON_ITALIC, title: 'Itálico', execCommand: 'italic', type: 'inline', mdPrefix: '*', mdSuffix: '*' },
                 { id: 'strikethrough', label: ICON_STRIKETHROUGH, title: 'Riscado', execCommand: 'strikeThrough', type: 'inline', mdPrefix: '~~', mdSuffix: '~~' },
@@ -56,6 +60,9 @@ class MarkdownWYSIWYG {
         this.currentSelectedGridCols = 1;
         this.savedRangeInfo = null;
 
+        this.contextualTableToolbar = null;
+        this.currentTableSelectionInfo = null;
+
         this._init();
     }
     _init() {
@@ -77,6 +84,10 @@ class MarkdownWYSIWYG {
         this._boundListeners.closeTableGridOnClickOutside = this._closeTableGridOnClickOutside.bind(this);
         this._boundListeners.closeTableGridOnEsc = this._closeTableGridOnEsc.bind(this);
 
+        this._boundListeners.onEditableAreaClickForTable = this._handleEditableAreaClickForTable.bind(this);
+        this._boundListeners.closeContextualTableToolbarOnClickOutside = this._closeContextualTableToolbarOnClickOutside.bind(this);
+        this._boundListeners.closeContextualTableToolbarOnEsc = this._closeContextualTableToolbarOnEsc.bind(this);
+
         this.toolbarButtonListeners = [];
         if (this.options.showToolbar) {
             this._createToolbar();
@@ -84,6 +95,8 @@ class MarkdownWYSIWYG {
         this._createEditorContentArea();
         this._createTabs();
         this._createTableGridSelector();
+        this._createContextualTableToolbar();
+
 
         this.switchToMode(this.currentMode, true);
         this.setValue(this.options.initialValue || '', true);
@@ -96,6 +109,230 @@ class MarkdownWYSIWYG {
         this._updateToolbarActiveStates();
         document.addEventListener('selectionchange', this._boundListeners.handleSelectionChange);
     }
+
+    _createContextualTableToolbar() {
+        this.contextualTableToolbar = document.createElement('div');
+        this.contextualTableToolbar.classList.add('md-contextual-table-toolbar');
+
+        const buttons = [
+            { id: 'insertRowAbove', label: ICON_TABLE_INSERT_ROW_ABOVE, title: 'Inserir Linha Acima', action: () => this._insertRowWysiwyg(true) },
+            { id: 'insertRowBelow', label: ICON_TABLE_INSERT_ROW_BELOW, title: 'Inserir Linha Abaixo', action: () => this._insertRowWysiwyg(false) },
+            { id: 'insertColLeft', label: ICON_TABLE_INSERT_COL_LEFT, title: 'Inserir Coluna à Esquerda', action: () => this._insertColumnWysiwyg(true) },
+            { id: 'insertColRight', label: ICON_TABLE_INSERT_COL_RIGHT, title: 'Inserir Coluna à Direita', action: () => this._insertColumnWysiwyg(false) },
+        ];
+
+        buttons.forEach(btnConfig => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.classList.add('md-contextual-table-toolbar-button', `md-ctt-button-${btnConfig.id}`);
+            button.innerHTML = btnConfig.label;
+            button.title = btnConfig.title;
+            button.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent editor click from hiding toolbar immediately
+                if (this.currentTableSelectionInfo) { // Ensure context is still valid
+                    btnConfig.action();
+                }
+                // Optionally hide after action, or rely on next click
+                // this._hideContextualTableToolbar(); 
+            });
+            this.contextualTableToolbar.appendChild(button);
+        });
+        this.editorWrapper.appendChild(this.contextualTableToolbar);
+    }
+
+    _showContextualTableToolbar(refElement) {
+        if (!this.contextualTableToolbar || !refElement) return;
+        this.contextualTableToolbar.style.display = 'flex';
+
+        const cellRect = refElement.getBoundingClientRect();
+        const editorWrapperRect = this.editorWrapper.getBoundingClientRect();
+        const toolbarHeight = this.contextualTableToolbar.offsetHeight;
+        const toolbarWidth = this.contextualTableToolbar.offsetWidth;
+
+        let top = cellRect.top - editorWrapperRect.top - toolbarHeight - 5; // 5px above
+        let left = cellRect.left - editorWrapperRect.left;
+
+        if (top < 0) { // If not enough space above, try below
+            top = cellRect.bottom - editorWrapperRect.top + 5; // 5px below
+        }
+        // Ensure it's within editor horizontal bounds
+        if (left + toolbarWidth > editorWrapperRect.width) {
+            left = editorWrapperRect.width - toolbarWidth - 5; // Align to right edge
+        }
+        if (left < 0) {
+            left = 5; // Align to left edge
+        }
+
+        this.contextualTableToolbar.style.top = `${top}px`;
+        this.contextualTableToolbar.style.left = `${left}px`;
+
+        document.addEventListener('click', this._boundListeners.closeContextualTableToolbarOnClickOutside, true);
+        document.addEventListener('keydown', this._boundListeners.closeContextualTableToolbarOnEsc, true);
+    }
+
+    _hideContextualTableToolbar() {
+        if (this.contextualTableToolbar) {
+            this.contextualTableToolbar.style.display = 'none';
+        }
+        this.currentTableSelectionInfo = null;
+        document.removeEventListener('click', this._boundListeners.closeContextualTableToolbarOnClickOutside, true);
+        document.removeEventListener('keydown', this._boundListeners.closeContextualTableToolbarOnEsc, true);
+    }
+
+    _closeContextualTableToolbarOnClickOutside(event) {
+        if (this.contextualTableToolbar &&
+            !this.contextualTableToolbar.contains(event.target) &&
+            !this._findParentElement(event.target, ['TD', 'TH'])) { // Hide if click is outside toolbar AND not on another cell
+            this._hideContextualTableToolbar();
+        } else if (this.contextualTableToolbar && this.contextualTableToolbar.contains(event.target)) {
+            // Click was on the toolbar itself, do nothing here (button handlers will act)
+        } else {
+            // Click was on another cell, _handleEditableAreaClickForTable will manage repositioning or hiding
+        }
+    }
+
+    _closeContextualTableToolbarOnEsc(event) {
+        if (event.key === 'Escape') {
+            this._hideContextualTableToolbar();
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    }
+
+    _handleEditableAreaClickForTable(event) {
+        if (this.currentMode !== 'wysiwyg') return;
+
+        const target = event.target;
+        const cell = this._findParentElement(target, ['TD', 'TH']);
+
+        if (cell && this.editableArea.contains(cell)) {
+            const row = this._findParentElement(cell, 'TR');
+            const table = this._findParentElement(row, 'TABLE');
+            if (row && table) {
+                this.currentTableSelectionInfo = {
+                    cell: cell,
+                    row: row,
+                    table: table,
+                    cellIndex: cell.cellIndex, // Visual index
+                    rowIndex: row.rowIndex // Visual index
+                };
+                this._showContextualTableToolbar(cell);
+            } else {
+                this._hideContextualTableToolbar();
+            }
+        } else if (!this.contextualTableToolbar.contains(target)) {
+            // Click was outside a cell and not on the toolbar itself
+            this._hideContextualTableToolbar();
+        }
+    }
+
+    _insertRowWysiwyg(above) {
+        if (!this.currentTableSelectionInfo) return;
+        const { row: currentRow, table } = this.currentTableSelectionInfo;
+        const parentSection = currentRow.parentNode; // TBODY, THEAD, or TFOOT
+        if (!parentSection || !['TBODY', 'THEAD', 'TFOOT'].includes(parentSection.nodeName)) {
+            console.warn("Could not find table section (tbody, thead, tfoot) for current row.");
+            return;
+        }
+
+        const newRow = document.createElement('tr');
+        let focusedCellIndex = this.currentTableSelectionInfo.cell.cellIndex;
+
+        for (const c of currentRow.cells) {
+            const newCellNode = document.createElement(c.nodeName); // TD or TH
+            newCellNode.innerHTML = '&#8203;'; // Zero-width space for cursor
+            if (c.colSpan > 1) {
+                newCellNode.colSpan = c.colSpan;
+            }
+            newRow.appendChild(newCellNode);
+        }
+
+        if (above) {
+            parentSection.insertBefore(newRow, currentRow);
+        } else {
+            parentSection.insertBefore(newRow, currentRow.nextSibling);
+        }
+
+        const cellToFocus = newRow.cells[focusedCellIndex] || newRow.cells[0];
+        if (cellToFocus) {
+            this._focusCell(cellToFocus);
+            // Update selection info to the new cell
+            this.currentTableSelectionInfo.cell = cellToFocus;
+            this.currentTableSelectionInfo.row = newRow;
+            this.currentTableSelectionInfo.rowIndex = newRow.rowIndex;
+            // Cell index remains the same relative to the new row
+        }
+
+        this._pushToUndoStack(this.editableArea.innerHTML);
+        if (this.options.onUpdate) this.options.onUpdate(this.getValue());
+        this._updateWysiwygToolbarActiveStates();
+        this._showContextualTableToolbar(cellToFocus || newRow.cells[0]); // Reposition toolbar
+    }
+
+    _insertColumnWysiwyg(left) {
+        if (!this.currentTableSelectionInfo) return;
+        const { cell: currentCell, table } = this.currentTableSelectionInfo;
+
+        const clickedCellVisualIndex = currentCell.cellIndex;
+        const targetInsertVisualIndex = left ? clickedCellVisualIndex : clickedCellVisualIndex + 1;
+        let newFocusedCellInCurrentRow = null;
+
+        for (const row of table.rows) { // Iterates over all rows (thead, tbody, tfoot)
+            // Determine cell type (TH for THEAD, TD otherwise)
+            const cellType = (row.parentNode.nodeName === 'THEAD' || (row.cells[0] && row.cells[0].nodeName === 'TH')) ? 'th' : 'td';
+
+            const newCell = document.createElement(cellType);
+            newCell.innerHTML = '&#8203;';
+
+            if (targetInsertVisualIndex >= row.cells.length) {
+                row.appendChild(newCell);
+            } else {
+                row.insertBefore(newCell, row.cells[targetInsertVisualIndex]);
+            }
+
+            if (row === this.currentTableSelectionInfo.row) {
+                newFocusedCellInCurrentRow = newCell;
+            }
+        }
+
+        if (newFocusedCellInCurrentRow) {
+            this._focusCell(newFocusedCellInCurrentRow);
+            // Update selection info to the new cell
+            this.currentTableSelectionInfo.cell = newFocusedCellInCurrentRow;
+            this.currentTableSelectionInfo.cellIndex = newFocusedCellInCurrentRow.cellIndex;
+        }
+
+        this._pushToUndoStack(this.editableArea.innerHTML);
+        if (this.options.onUpdate) this.options.onUpdate(this.getValue());
+        this._updateWysiwygToolbarActiveStates();
+        this._showContextualTableToolbar(newFocusedCellInCurrentRow || currentCell); // Reposition toolbar
+    }
+
+    _focusCell(cellElement) {
+        if (!cellElement) return;
+        this.editableArea.focus();
+        const range = document.createRange();
+        const sel = window.getSelection();
+
+        // Ensure cell has at least a ZWS for cursor placement
+        if (!cellElement.firstChild || (cellElement.firstChild.nodeType === Node.TEXT_NODE && cellElement.firstChild.textContent === '')) {
+            cellElement.innerHTML = '&#8203;';
+        }
+
+        // Try to select the content or place cursor at the start
+        if (cellElement.firstChild) {
+            // If it's ZWS, place cursor after it. Otherwise, at the start of content.
+            const offset = (cellElement.firstChild.nodeType === Node.TEXT_NODE && cellElement.firstChild.textContent === '\u200B') ? 1 : 0;
+            range.setStart(cellElement.firstChild, offset);
+        } else { // Should not happen if we ensure ZWS
+            range.selectNodeContents(cellElement);
+        }
+        range.collapse(true);
+
+        sel.removeAllRanges();
+        sel.addRange(range);
+    }
+
 
     _createTableGridSelector() {
         this.tableGridSelector = document.createElement('div');
@@ -320,6 +557,7 @@ class MarkdownWYSIWYG {
     switchToMode(mode, isInitialSetup = false) {
         if (this.currentMode === mode && !isInitialSetup) return;
         this._hideTableGridSelector();
+        this._hideContextualTableToolbar(); // Hide contextual table toolbar on mode switch
         const previousContent = this.currentMode === 'wysiwyg' ? this.editableArea.innerHTML : this.markdownArea.value;
         this.currentMode = mode;
         if (mode === 'wysiwyg') {
@@ -359,6 +597,8 @@ class MarkdownWYSIWYG {
     }
     _handleSelectionChange() {
         this._updateToolbarActiveStates();
+        // Contextual table toolbar is handled by its own click listener, not selection change
+        // to avoid it appearing/disappearing too erratically during text selection.
     }
     _clearToolbarActiveStates() {
         this.options.buttons.forEach(btnConfig => {
@@ -645,7 +885,8 @@ class MarkdownWYSIWYG {
         this.editableArea.addEventListener('input', this._boundListeners.onEditableAreaInput);
         this.editableArea.addEventListener('keydown', this._boundListeners.onEditableAreaKeyDown);
         this.editableArea.addEventListener('keyup', this._boundListeners.updateWysiwygToolbar);
-        this.editableArea.addEventListener('click', this._boundListeners.updateWysiwygToolbar);
+        this.editableArea.addEventListener('click', this._boundListeners.updateWysiwygToolbar); // General toolbar updates
+        this.editableArea.addEventListener('click', this._boundListeners.onEditableAreaClickForTable); // Table context
         this.editableArea.addEventListener('focus', this._boundListeners.updateWysiwygToolbar);
         this.markdownArea.addEventListener('input', this._boundListeners.onMarkdownAreaInput);
         this.markdownArea.addEventListener('keydown', this._boundListeners.onMarkdownAreaKeyDown);
@@ -671,12 +912,12 @@ class MarkdownWYSIWYG {
                             let nextIndex = currentIndex + (e.shiftKey ? -1 : 1);
                             if (nextIndex >= 0 && nextIndex < cells.length) {
                                 const nextCell = cells[nextIndex];
-                                const range = document.createRange();
-                                range.selectNodeContents(nextCell);
-                                range.collapse(false);
-                                sel.removeAllRanges();
-                                sel.addRange(range);
-                                nextCell.focus();
+                                this._focusCell(nextCell); // Use helper to focus
+                                // Update contextual toolbar position
+                                const row = this._findParentElement(nextCell, 'TR');
+                                this.currentTableSelectionInfo = { cell: nextCell, row: row, table: table, cellIndex: nextCell.cellIndex, rowIndex: row.rowIndex };
+                                this._showContextualTableToolbar(nextCell);
+
                             } else if (!e.shiftKey && nextIndex >= cells.length) {
                                 let nextFocusable = table.nextElementSibling;
                                 while (nextFocusable && (nextFocusable.nodeName === "#text" || !nextFocusable.hasAttribute('tabindex') && nextFocusable.nodeName !== "P")) {
@@ -691,6 +932,7 @@ class MarkdownWYSIWYG {
                                 } else if (nextFocusable) {
                                     nextFocusable.focus();
                                 }
+                                this._hideContextualTableToolbar();
                             }
                         }
                     } else {
@@ -726,10 +968,12 @@ class MarkdownWYSIWYG {
         }
     }
     _findParentElement(node, tagNameOrNames) {
+        if (!node) return null;
         const tagNames = Array.isArray(tagNameOrNames) ? tagNameOrNames.map(n => n.toUpperCase()) : [tagNameOrNames.toUpperCase()];
-        while (node && node !== this.editableArea && node !== this.markdownArea) {
-            if (tagNames.includes(node.nodeName)) return node;
-            node = node.parentNode;
+        let currentNode = node;
+        while (currentNode && currentNode !== this.editableArea && currentNode !== this.markdownArea && currentNode !== document.body && currentNode !== document.documentElement) {
+            if (tagNames.includes(currentNode.nodeName)) return currentNode;
+            currentNode = currentNode.parentNode;
         }
         return null;
     }
@@ -778,11 +1022,11 @@ class MarkdownWYSIWYG {
                 const lastChild = this.editableArea.lastChild;
                 if (lastChild.nodeType === Node.TEXT_NODE) {
                     range.setStart(lastChild, lastChild.length);
-                } else {
+                } else { // Try to go into the last element
                     range.selectNodeContents(lastChild);
                 }
-                range.collapse(false);
-            } else {
+                range.collapse(false); // Collapse to the end
+            } else { // Editor is empty
                 range.setStart(this.editableArea, 0);
                 range.collapse(true);
             }
@@ -898,16 +1142,26 @@ class MarkdownWYSIWYG {
 
         rangeToUse.insertNode(fragment);
 
+        let firstCellToFocus = null;
         if (rows >= 1 && cols >= 1 && thead.firstChild && thead.firstChild.firstChild) {
-            const firstCell = thead.firstChild.firstChild;
-            rangeToUse.selectNodeContents(firstCell);
-            rangeToUse.collapse(false);
-        } else {
+            firstCellToFocus = thead.firstChild.firstChild;
+        } else if (tbody.firstChild && tbody.firstChild.firstChild) {
+            firstCellToFocus = tbody.firstChild.firstChild;
+        }
+
+        if (firstCellToFocus) {
+            this._focusCell(firstCellToFocus);
+            // After focusing, update currentTableSelectionInfo and show contextual toolbar
+            const row = this._findParentElement(firstCellToFocus, 'TR');
+            this.currentTableSelectionInfo = { cell: firstCellToFocus, row: row, table: table, cellIndex: firstCellToFocus.cellIndex, rowIndex: row.rowIndex };
+            this._showContextualTableToolbar(firstCellToFocus);
+        } else { // Fallback to paragraph after if table is somehow empty
             rangeToUse.setStart(pAfter, pAfter.childNodes.length > 0 ? 1 : 0);
             rangeToUse.collapse(true);
+            selection.removeAllRanges();
+            selection.addRange(rangeToUse);
         }
-        selection.removeAllRanges();
-        selection.addRange(rangeToUse);
+
 
         this._pushToUndoStack(this.editableArea.innerHTML);
         if (this.options.onUpdate) this.options.onUpdate(this.getValue());
@@ -1397,7 +1651,7 @@ class MarkdownWYSIWYG {
         }
         const markedOptions = {
             gfm: true,
-            breaks: false, // Important: false to handle paragraphs correctly
+            breaks: false,
             smartLists: true,
         };
         return marked.parse(markdown || '', markedOptions);
@@ -1410,53 +1664,38 @@ class MarkdownWYSIWYG {
         } else {
             tempDiv = elementOrHtml.cloneNode(true);
         }
-        // Remove zero-width spaces that might have been added for caret positioning
         tempDiv.innerHTML = tempDiv.innerHTML.replace(/\u200B/g, '');
 
         let markdown = '';
-        this._normalizeNodes(tempDiv); // Normalize nodes before processing
+        this._normalizeNodes(tempDiv);
 
         Array.from(tempDiv.childNodes).forEach(child => {
             markdown += this._nodeToMarkdownRecursive(child);
         });
-
-        // Post-processing to clean up excessive newlines and trailing spaces
-        markdown = markdown.replace(/\n\s*\n\s*\n+/g, '\n\n'); // Collapse 3+ newlines to 2
-        markdown = markdown.replace(/ +\n/g, '\n'); // Remove trailing spaces from lines
+        markdown = markdown.replace(/\n\s*\n\s*\n+/g, '\n\n');
+        markdown = markdown.replace(/ +\n/g, '\n');
         return markdown.trim();
     }
     _normalizeNodes(parentElement) {
         let currentNode = parentElement.firstChild;
         while (currentNode) {
             let nextNode = currentNode.nextSibling;
-
-            // Merge adjacent text nodes
             if (currentNode.nodeType === Node.TEXT_NODE && nextNode && nextNode.nodeType === Node.TEXT_NODE) {
                 currentNode.textContent += nextNode.textContent;
                 parentElement.removeChild(nextNode);
-                nextNode = currentNode.nextSibling; // Re-evaluate next node
+                nextNode = currentNode.nextSibling;
             }
-            // Handle <br> tags: convert them to newlines in specific contexts
             else if (currentNode.nodeName === 'BR') {
-                // If BR is followed by nothing, another BR, or a block element, it's a hard break (double newline in MD often)
-                // Or if it's the last child.
                 if (!nextNode || nextNode.nodeName === 'BR' || this._isBlockElement(nextNode)) {
-                    // This might introduce too many newlines if paragraphs are already handled.
-                    // The goal is that <p>Text<br>Next</p> becomes "Text\nNext" then a paragraph.
-                    // And <p>Text</p><br><p>Next</p> stays as two paragraphs.
-                    // Let's replace BR with a text newline if it's not already creating one.
                     const textNode = document.createTextNode('\n');
                     parentElement.insertBefore(textNode, currentNode);
                 } else if (nextNode.nodeType === Node.TEXT_NODE && !nextNode.textContent.startsWith('\n')) {
-                    // If BR is followed by text, ensure that text starts with a newline.
                     nextNode.textContent = '\n' + nextNode.textContent;
                 }
                 parentElement.removeChild(currentNode);
-                currentNode = nextNode; // Current node is removed, so move to the (new) next.
-                continue; // Skip to next iteration
+                currentNode = nextNode;
+                continue;
             }
-
-            // Recursively normalize children if it's an element node
             if (currentNode.childNodes && currentNode.childNodes.length > 0 && currentNode.nodeType === Node.ELEMENT_NODE) {
                 this._normalizeNodes(currentNode);
             }
@@ -1488,7 +1727,6 @@ class MarkdownWYSIWYG {
                 Array.from(li.childNodes).forEach(childNode => {
                     if (childNode.nodeName === 'UL' || childNode.nodeName === 'OL') {
                         hasNestedList = true;
-                        // Ensure a newline before a nested list if there's preceding content on the same line.
                         if (listItemContent.trim().length > 0 && !listItemContent.endsWith('\n')) {
                             listItemContent += '\n';
                         }
@@ -1497,26 +1735,20 @@ class MarkdownWYSIWYG {
                         listItemContent += this._nodeToMarkdownRecursive(childNode);
                     }
                 });
-
-                // Process the list item content, handling multi-line items correctly.
                 const lines = listItemContent.trim().split('\n');
-                let firstLine = lines.shift() || ""; // Get the first line of content
-                let processedContent = firstLine.trimEnd(); // Trim trailing spaces from the first line
+                let firstLine = lines.shift() || "";
+                let processedContent = firstLine.trimEnd();
 
-                if (lines.length > 0) { // If there are subsequent lines
+                if (lines.length > 0) {
                     lines.forEach(line => {
-                        // Add subsequent lines, indented appropriately.
-                        if (line.trim().length > 0) { // Only add if line has content
+                        if (line.trim().length > 0) {
                             processedContent += '\n' + indent + '  ' + line.trimStart();
                         } else if (processedContent.length > 0 || hasNestedList) {
-                            // Preserve empty lines within multi-line items if not entirely empty
-                            // or if a nested list follows, to maintain structure.
                             processedContent += '\n' + indent + '  ';
                         }
                     });
                 }
-
-                markdown += `${indent}${itemMarker}${processedContent.trimEnd()}\n`; // Add the formatted list item
+                markdown += `${indent}${itemMarker}${processedContent.trimEnd()}\n`;
                 if (isOrdered) listCounter++;
             }
         });
@@ -1526,30 +1758,29 @@ class MarkdownWYSIWYG {
     _cellContentToMarkdown(cellNode) {
         let markdown = '';
         Array.from(cellNode.childNodes).forEach(child => {
-            if (child.nodeName === 'P') { // Paragraphs inside cells should be treated as inline content
-                let pContent = this._processInlineContainerRecursive(child).replace(/\n\s*\n/g, ' ').trim(); // Collapse newlines within a P to spaces
+            if (child.nodeName === 'P') {
+                let pContent = this._processInlineContainerRecursive(child).replace(/\n\s*\n/g, ' ').trim();
                 markdown += pContent;
-                if (child.nextSibling) markdown += ' '; // Add space if not the last element
+                if (child.nextSibling) markdown += ' ';
             } else if (child.nodeName === 'BR') {
-                markdown += '<br>'; // Preserve explicit <br> as they are significant in tables
+                markdown += '<br>';
             }
             else {
                 markdown += this._nodeToMarkdownRecursive(child);
             }
         });
-        markdown = markdown.replace(/<br>\s*<br>/gi, '<br>'); // Collapse multiple <br> to one
-        markdown = markdown.replace(/\s+/g, ' ').trim(); // Consolidate whitespace
-        markdown = markdown.replace(/\|/g, '\\|'); // Escape pipe characters
+        markdown = markdown.replace(/<br>\s*<br>/gi, '<br>');
+        markdown = markdown.replace(/\s+/g, ' ').trim();
+        markdown = markdown.replace(/\|/g, '\\|');
         return markdown;
     }
 
     _nodeToMarkdownRecursive(node) {
         switch (node.nodeName) {
             case '#text':
-                // If parent is PRE, return text as is. Otherwise, collapse multiple spaces.
                 if (this._findParentElement(node, 'PRE')) return node.textContent;
                 return node.textContent.replace(/  +/g, ' ');
-            case 'BR': return '\n'; // Let paragraph/block handling add more newlines if needed
+            case 'BR': return '\n';
             case 'B': case 'STRONG': return `**${this._processInlineContainerRecursive(node).trim()}**`;
             case 'I': case 'EM': return `*${this._processInlineContainerRecursive(node).trim()}*`;
             case 'S': case 'DEL': case 'STRIKE': return `~~${this._processInlineContainerRecursive(node).trim()}~~`;
@@ -1558,39 +1789,27 @@ class MarkdownWYSIWYG {
             case 'H3': return `### ${this._processInlineContainerRecursive(node).trim()}\n\n`;
             case 'P':
                 const pParent = node.parentNode;
-                // Check if this P is directly inside a TD or TH, or inside a LI/BLOCKQUOTE
                 const isInsideTableCell = pParent && (pParent.nodeName === 'TD' || pParent.nodeName === 'TH');
                 const isInsideListItemOrBlockquote = pParent && (pParent.nodeName === 'LI' || pParent.nodeName === 'BLOCKQUOTE');
-
                 let pContent = this._processInlineContainerRecursive(node).trim();
-
                 if (isInsideTableCell) {
-                    return pContent.replace(/\n\n/g, ' '); // In tables, <p> becomes inline with spaces for newlines
+                    return pContent.replace(/\n\n/g, ' ');
                 }
                 if (isInsideListItemOrBlockquote) {
-                    // For LI/Blockquote, <p> content doesn't add extra \n\n around itself,
-                    // the parent LI/Blockquote handles the block spacing.
-                    // However, internal newlines (from <br>) should be preserved as single newlines.
                     return pContent.replace(/\n\s*\n/g, '\n').trim() + (pContent ? '\n' : '');
                 }
-                return pContent ? `${pContent}\n\n` : ''; // Standard paragraph
+                return pContent ? `${pContent}\n\n` : '';
             case 'UL': case 'OL':
                 let listMd = this._listToMarkdownRecursive(node, "", node.nodeName, 1);
-                // Ensure it's treated as a block element with blank lines around it,
-                // unless it's nested (which _listToMarkdownRecursive handles with indentation).
                 if (listMd.trim().length > 0 && !listMd.endsWith('\n\n')) {
-                    if (!listMd.endsWith('\n')) listMd += '\n'; // Ensure at least one trailing newline
-                    listMd += '\n'; // Add another for block spacing
+                    if (!listMd.endsWith('\n')) listMd += '\n';
+                    listMd += '\n';
                 }
                 return listMd;
             case 'LI':
-                // LI content is primarily handled by _listToMarkdownRecursive.
-                // This direct call would only happen if an LI is outside a UL/OL, which is invalid HTML
-                // but we can try to gracefully handle it.
-                return this._processInlineContainerRecursive(node).trim(); // Just get content
+                return this._processInlineContainerRecursive(node).trim();
             case 'BLOCKQUOTE':
                 const quoteContentRaw = this._processInlineContainerRecursive(node);
-                // Split into lines, trim each, filter out empty lines that were just for spacing
                 const quoteLines = quoteContentRaw.split('\n').map(line => line.trim());
                 const nonEmptyLines = quoteLines.filter(line => line.length > 0);
                 return nonEmptyLines.map(line => `> ${line}`).join('\n') + '\n\n';
@@ -1599,20 +1818,18 @@ class MarkdownWYSIWYG {
                     const codeElement = node.firstChild;
                     const langMatch = codeElement.className.match(/language-(\S+)/);
                     const lang = langMatch ? langMatch[1] : '';
-                    let preContent = codeElement.textContent; // Use textContent to get raw text
+                    let preContent = codeElement.textContent;
                     if (preContent.length > 0 && !preContent.endsWith('\n')) preContent += '\n';
                     return `\`\`\`${lang}\n${preContent}\`\`\`\n\n`;
                 }
-                // Fallback for PRE without CODE (less common for Markdown sources)
                 let preTextContent = node.textContent;
                 if (preTextContent.length > 0 && !preTextContent.endsWith('\n')) preTextContent += '\n';
                 return `\`\`\`\n${preTextContent}\`\`\`\n\n`;
             case 'CODE':
-                // Only process if not inside a PRE (inline code)
                 if (!this._findParentElement(node, 'PRE')) {
                     return `\`${node.textContent.trim()}\``;
                 }
-                return ''; // Handled by PRE
+                return '';
             case 'A':
                 const href = node.getAttribute('href') || '';
                 const linkText = this._processInlineContainerRecursive(node).trim();
@@ -1621,15 +1838,13 @@ class MarkdownWYSIWYG {
             case 'TABLE':
                 let tableMarkdown = '';
                 const tHeadNode = node.querySelector('thead');
-                const tBodyNode = node.querySelector('tbody') || node; // Use node itself if no tbody
+                const tBodyNode = node.querySelector('tbody') || node;
                 let colCount = 0;
                 let headerMdContent = '';
                 let bodyMdContent = '';
-
-                // Process headers (thead)
                 if (tHeadNode) {
                     Array.from(tHeadNode.querySelectorAll('tr')).forEach(headerRowNode => {
-                        const headerCells = Array.from(headerRowNode.querySelectorAll('th, td')) // th or td in thead
+                        const headerCells = Array.from(headerRowNode.querySelectorAll('th, td'))
                             .map(cell => this._cellContentToMarkdown(cell));
                         if (headerCells.length > 0) {
                             headerMdContent += `| ${headerCells.join(' | ')} |\n`;
@@ -1637,37 +1852,29 @@ class MarkdownWYSIWYG {
                         }
                     });
                 }
-
-                // Attempt to infer header from first tbody row if no thead and cells are TH or bold
                 let firstTBodyRowUsedAsHeader = false;
-                if (colCount === 0 && tBodyNode) { // Only if no header from thead
+                if (colCount === 0 && tBodyNode) {
                     const firstRow = tBodyNode.querySelector('tr');
                     if (firstRow) {
-                        // Check if cells are <th> or if all <td> have <strong>/<b> as their only child
                         const isLikelyHeader = Array.from(firstRow.children).some(cell => cell.nodeName === 'TH') ||
                             (Array.from(firstRow.children).every(cell => cell.children.length === 1 && (cell.firstElementChild.nodeName === 'STRONG' || cell.firstElementChild.nodeName === 'B')));
-
                         if (isLikelyHeader) {
                             const potentialHeaderCells = Array.from(firstRow.querySelectorAll('th, td'))
                                 .map(cell => this._cellContentToMarkdown(cell));
                             if (potentialHeaderCells.length > 0) {
                                 headerMdContent += `| ${potentialHeaderCells.join(' | ')} |\n`;
                                 colCount = potentialHeaderCells.length;
-                                firstTBodyRowUsedAsHeader = true; // Mark to skip this row in tbody processing
+                                firstTBodyRowUsedAsHeader = true;
                             }
                         }
                     }
                 }
-
-                // If still no column count (e.g., table with only <td> in <tbody>), try to get from first data row
                 if (colCount === 0 && tBodyNode) {
                     const firstDataRow = tBodyNode.querySelector('tr');
                     if (firstDataRow) {
                         colCount = firstDataRow.querySelectorAll('td, th').length;
                     }
                 }
-
-                // If absolutely no structure can be determined, return content as paragraphs (edge case)
                 if (colCount === 0 && headerMdContent.trim() === '') {
                     let fallbackContent = '';
                     Array.from(node.querySelectorAll('tr')).forEach(trNode => {
@@ -1677,41 +1884,30 @@ class MarkdownWYSIWYG {
                     });
                     return fallbackContent.trim() ? fallbackContent.trim() + '\n\n' : '';
                 }
-
-
                 tableMarkdown = headerMdContent;
-                // Add separator line if there are headers or we have a column count
                 if (headerMdContent.trim() !== '' || colCount > 0) {
                     tableMarkdown += `|${' --- |'.repeat(colCount)}\n`;
                 }
-
-                // Process body (tbody)
                 Array.from(tBodyNode.querySelectorAll('tr')).forEach((bodyRowNode, index) => {
-                    if (firstTBodyRowUsedAsHeader && index === 0) return; // Skip if used as header
-
-                    const bodyCellsHtml = Array.from(bodyRowNode.querySelectorAll('td, th')); // td or th in tbody
+                    if (firstTBodyRowUsedAsHeader && index === 0) return;
+                    const bodyCellsHtml = Array.from(bodyRowNode.querySelectorAll('td, th'));
                     let bodyCellsMd = bodyCellsHtml.map(cell => this._cellContentToMarkdown(cell));
-
-                    // Pad with empty strings if row has fewer cells than colCount
                     const finalCells = [];
                     for (let k = 0; k < colCount; k++) {
-                        finalCells.push(bodyCellsMd[k] || ''); // Default to empty string
+                        finalCells.push(bodyCellsMd[k] || '');
                     }
                     bodyMdContent += `| ${finalCells.join(' | ')} |\n`;
                 });
                 tableMarkdown += bodyMdContent;
-                return tableMarkdown.trim() ? tableMarkdown.trim() + '\n\n' : ''; // Ensure block spacing
-
-            case 'DIV': // Treat DIVs like paragraphs unless it's the editor area itself
+                return tableMarkdown.trim() ? tableMarkdown.trim() + '\n\n' : '';
+            case 'DIV':
                 const divContent = this._processInlineContainerRecursive(node).trim();
-                if (node.classList.contains('md-editable-area')) return divContent; // Root editor, just content
-                return divContent ? `${divContent}\n\n` : ''; // Otherwise, like a paragraph
+                if (node.classList.contains('md-editable-area')) return divContent;
+                return divContent ? `${divContent}\n\n` : '';
             default:
-                // For unhandled elements, try to process their children if any
                 if (node.childNodes && node.childNodes.length > 0) {
                     return this._processInlineContainerRecursive(node);
                 }
-                // Otherwise, just return its text content, collapsing spaces
                 return (node.textContent || '').replace(/  +/g, ' ');
         }
     }
@@ -1725,11 +1921,11 @@ class MarkdownWYSIWYG {
     setValue(markdown, isInitialSetup = false) {
         const html = this._markdownToHtml(markdown);
         this.editableArea.innerHTML = html;
-        this.markdownArea.value = markdown || ''; // Ensure markdownArea also has the raw markdown
+        this.markdownArea.value = markdown || '';
         if (!this.isUpdatingFromUndoRedo && !isInitialSetup) {
             const currentContent = this.currentMode === 'wysiwyg' ? this.editableArea.innerHTML : this.markdownArea.value;
             this._pushToUndoStack(currentContent);
-        } else if (isInitialSetup) { // On initial setup, always set the first undo state
+        } else if (isInitialSetup) {
             const currentContent = this.currentMode === 'wysiwyg' ? this.editableArea.innerHTML : this.markdownArea.value;
             this.undoStack = [currentContent];
             this.redoStack = [];
@@ -1737,21 +1933,24 @@ class MarkdownWYSIWYG {
         this._updateToolbarActiveStates();
     }
     destroy() {
-        // Hide and remove table grid selector first
-        this._hideTableGridSelector(); // Removes its own event listeners
+        this._hideTableGridSelector();
         if (this.tableGridSelector && this.tableGridSelector.parentNode) {
             this.tableGridSelector.parentNode.removeChild(this.tableGridSelector);
             this.tableGridSelector = null;
         }
-        this.savedRangeInfo = null; // Clear any saved range
+        this._hideContextualTableToolbar(); // Hide and prepare for removal
+        if (this.contextualTableToolbar && this.contextualTableToolbar.parentNode) {
+            this.contextualTableToolbar.parentNode.removeChild(this.contextualTableToolbar);
+            this.contextualTableToolbar = null;
+        }
+        this.savedRangeInfo = null;
+        this.currentTableSelectionInfo = null;
 
-        // Remove global event listeners
         if (this._boundListeners.handleSelectionChange) {
             document.removeEventListener('selectionchange', this._boundListeners.handleSelectionChange);
         }
-        // (closeTableGridOnClickOutside and closeTableGridOnEsc are removed by _hideTableGridSelector)
+        // Listeners for contextualTableToolbar (click outside, esc) are removed by _hideContextualTableToolbar
 
-        // Remove toolbar button listeners
         if (this.toolbarButtonListeners) {
             this.toolbarButtonListeners.forEach(({ button, listener }) => {
                 button.removeEventListener('click', listener);
@@ -1759,16 +1958,15 @@ class MarkdownWYSIWYG {
             this.toolbarButtonListeners = [];
         }
 
-        // Remove listeners from editable area
         if (this.editableArea) {
             this.editableArea.removeEventListener('input', this._boundListeners.onEditableAreaInput);
             this.editableArea.removeEventListener('keydown', this._boundListeners.onEditableAreaKeyDown);
             this.editableArea.removeEventListener('keyup', this._boundListeners.updateWysiwygToolbar);
             this.editableArea.removeEventListener('click', this._boundListeners.updateWysiwygToolbar);
+            this.editableArea.removeEventListener('click', this._boundListeners.onEditableAreaClickForTable);
             this.editableArea.removeEventListener('focus', this._boundListeners.updateWysiwygToolbar);
         }
 
-        // Remove listeners from markdown area
         if (this.markdownArea) {
             this.markdownArea.removeEventListener('input', this._boundListeners.onMarkdownAreaInput);
             this.markdownArea.removeEventListener('keydown', this._boundListeners.onMarkdownAreaKeyDown);
@@ -1777,7 +1975,6 @@ class MarkdownWYSIWYG {
             this.markdownArea.removeEventListener('focus', this._boundListeners.updateMarkdownToolbar);
         }
 
-        // Remove tab button listeners
         if (this.wysiwygTabButton) {
             this.wysiwygTabButton.removeEventListener('click', this._boundListeners.onWysiwygTabClick);
         }
@@ -1785,12 +1982,8 @@ class MarkdownWYSIWYG {
             this.markdownTabButton.removeEventListener('click', this._boundListeners.onMarkdownTabClick);
         }
 
-        // Clear the host element
         this.hostElement.innerHTML = '';
-
-        // Nullify properties to help garbage collection
         this._boundListeners = null;
-        // ... (nullify other properties like editableArea, markdownArea, toolbar, etc.)
         this.editableArea = null;
         this.markdownArea = null;
         this.toolbar = null;

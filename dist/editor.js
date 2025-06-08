@@ -79,6 +79,7 @@ class MarkdownWYSIWYG {
         this._boundListeners.closeTableGridOnClickOutside = this._closeTableGridOnClickOutside.bind(this);
         this._boundListeners.onEditableAreaClickForTable = this._handleEditableAreaClickForTable.bind(this);
         this._boundListeners.closeContextualTableToolbarOnClickOutside = this._closeContextualTableToolbarOnClickOutside.bind(this);
+        this._boundListeners.syncScrollMarkdown = this._syncScrollMarkdown.bind(this);
 
         this.toolbarButtonListeners = [];
         if (this.options.showToolbar) {
@@ -96,6 +97,7 @@ class MarkdownWYSIWYG {
             this._pushToUndoStack(this.editableArea.innerHTML);
         } else {
             this._pushToUndoStack(this.markdownArea.value);
+            this._updateMarkdownLineNumbers(); 
         }
         this._updateToolbarActiveStates();
         document.addEventListener('selectionchange', this._boundListeners.handleSelectionChange);
@@ -480,7 +482,6 @@ class MarkdownWYSIWYG {
         this._updateToolbarActiveStates();
     }
 
-
     _createToolbar() {
         this.toolbar = document.createElement('div');
         this.toolbar.classList.add('md-toolbar');
@@ -502,15 +503,33 @@ class MarkdownWYSIWYG {
     _createEditorContentArea() {
         this.contentAreaContainer = document.createElement('div');
         this.contentAreaContainer.classList.add('md-editor-content-area');
+
         this.editableArea = document.createElement('div');
         this.editableArea.classList.add('md-editable-area');
         this.editableArea.setAttribute('contenteditable', 'true');
         this.editableArea.setAttribute('spellcheck', 'false');
         this.contentAreaContainer.appendChild(this.editableArea);
+
+        // Structure for Markdown editor with line numbers
+        this.markdownEditorContainer = document.createElement('div');
+        this.markdownEditorContainer.classList.add('md-markdown-editor-container');
+        this.markdownEditorContainer.style.display = 'none'; // Initially hidden
+
+        this.markdownLineNumbersDiv = document.createElement('div');
+        this.markdownLineNumbersDiv.classList.add('md-markdown-line-numbers');
+
+        this.markdownTextareaWrapper = document.createElement('div');
+        this.markdownTextareaWrapper.classList.add('md-markdown-textarea-wrapper');
+
         this.markdownArea = document.createElement('textarea');
         this.markdownArea.classList.add('md-markdown-area');
         this.markdownArea.setAttribute('spellcheck', 'false');
-        this.contentAreaContainer.appendChild(this.markdownArea);
+        
+        this.markdownTextareaWrapper.appendChild(this.markdownArea);
+        this.markdownEditorContainer.appendChild(this.markdownLineNumbersDiv);
+        this.markdownEditorContainer.appendChild(this.markdownTextareaWrapper);
+        
+        this.contentAreaContainer.appendChild(this.markdownEditorContainer);
         this.editorWrapper.appendChild(this.contentAreaContainer);
     }
 
@@ -530,14 +549,6 @@ class MarkdownWYSIWYG {
         this.editorWrapper.appendChild(this.tabsContainer);
     }
 
-    _setModeUI(activeArea, inactiveArea, activeTabButton, inactiveTabButton) {
-        activeArea.style.display = 'block';
-        inactiveArea.style.display = 'none';
-        activeTabButton.classList.add('active');
-        inactiveTabButton.classList.remove('active');
-        activeArea.focus();
-    }
-
     switchToMode(mode, isInitialSetup = false) {
         if (this.currentMode === mode && !isInitialSetup) return;
         this._hideTableGridSelector();
@@ -550,12 +561,21 @@ class MarkdownWYSIWYG {
             if (!isInitialSetup) {
                 this.editableArea.innerHTML = this._markdownToHtml(this.markdownArea.value);
             }
-            this._setModeUI(this.editableArea, this.markdownArea, this.wysiwygTabButton, this.markdownTabButton);
-        } else {
+            this.editableArea.style.display = 'block';
+            this.markdownEditorContainer.style.display = 'none';
+            this.wysiwygTabButton.classList.add('active');
+            this.markdownTabButton.classList.remove('active');
+            this.editableArea.focus();
+        } else { // markdown mode
             if (!isInitialSetup) {
                 this.markdownArea.value = this._htmlToMarkdown(this.editableArea);
             }
-            this._setModeUI(this.markdownArea, this.editableArea, this.markdownTabButton, this.wysiwygTabButton);
+            this.editableArea.style.display = 'none';
+            this.markdownEditorContainer.style.display = 'flex';
+            this.markdownTabButton.classList.add('active');
+            this.wysiwygTabButton.classList.remove('active');
+            this.markdownArea.focus();
+            this._updateMarkdownLineNumbers();
         }
 
         const currentEditorContent = (mode === 'wysiwyg') ? this.editableArea.innerHTML : this.markdownArea.value;
@@ -569,6 +589,27 @@ class MarkdownWYSIWYG {
 
         this._updateToolbarActiveStates();
     }
+
+    _updateMarkdownLineNumbers() {
+        if (!this.markdownArea || !this.markdownLineNumbersDiv) return;
+
+        const lines = this.markdownArea.value.split('\n');
+        let lineCount = lines.length;
+        
+        let lineNumbersHtml = '';
+        for (let i = 1; i <= lineCount; i++) {
+            lineNumbersHtml += `<div>${i}</div>`;
+        }
+        this.markdownLineNumbersDiv.innerHTML = lineNumbersHtml || '<div>1</div>'; 
+        this._syncScrollMarkdown();
+    }
+
+    _syncScrollMarkdown() {
+        if (this.markdownLineNumbersDiv && this.markdownArea) {
+            this.markdownLineNumbersDiv.scrollTop = this.markdownArea.scrollTop;
+        }
+    }
+
 
     _handleSelectionChange() {
         this._updateToolbarActiveStates();
@@ -881,7 +922,12 @@ class MarkdownWYSIWYG {
 
     _attachEventListeners() {
         this._boundListeners.onEditableAreaInput = (e) => this._onAreaInput(e, () => this.editableArea.innerHTML, this._boundListeners.updateWysiwygToolbar);
-        this._boundListeners.onMarkdownAreaInput = (e) => this._onAreaInput(e, () => this.markdownArea.value, this._boundListeners.updateMarkdownToolbar);
+        
+        this._boundListeners.onMarkdownAreaInput = (e) => {
+            this._onAreaInput(e, () => this.markdownArea.value, this._boundListeners.updateMarkdownToolbar);
+            this._updateMarkdownLineNumbers();
+        };
+
         this._boundListeners.onEditableAreaKeyDown = (e) => this._onAreaKeyDown(e, this.editableArea, this._boundListeners.updateWysiwygToolbar);
         this._boundListeners.onMarkdownAreaKeyDown = (e) => this._onAreaKeyDown(e, this.markdownArea, this._boundListeners.updateMarkdownToolbar);
 
@@ -897,6 +943,7 @@ class MarkdownWYSIWYG {
         this.markdownArea.addEventListener('keyup', this._boundListeners.updateMarkdownToolbar);
         this.markdownArea.addEventListener('click', this._boundListeners.updateMarkdownToolbar);
         this.markdownArea.addEventListener('focus', this._boundListeners.updateMarkdownToolbar);
+        this.markdownArea.addEventListener('scroll', this._boundListeners.syncScrollMarkdown);
     }
 
     _handleKeyDownShared(e, targetArea) {
@@ -1005,6 +1052,7 @@ class MarkdownWYSIWYG {
                 this.editableArea.innerHTML = contentToRestore;
             } else {
                 this.markdownArea.value = contentToRestore;
+                this._updateMarkdownLineNumbers();
             }
             this._moveCursorToEnd();
             if (this.options.onUpdate) this.options.onUpdate(this.getValue());
@@ -2013,6 +2061,11 @@ class MarkdownWYSIWYG {
         const html = this._markdownToHtml(markdown);
         this.editableArea.innerHTML = html;
         this.markdownArea.value = markdown || '';
+
+        if (this.currentMode === 'markdown') {
+            this._updateMarkdownLineNumbers();
+        }
+
         if (!this.isUpdatingFromUndoRedo && !isInitialSetup) {
             const currentContent = this.currentMode === 'wysiwyg' ? this.editableArea.innerHTML : this.markdownArea.value;
             this._pushToUndoStack(currentContent);
@@ -2064,6 +2117,7 @@ class MarkdownWYSIWYG {
             this.markdownArea.removeEventListener('keyup', this._boundListeners.updateMarkdownToolbar);
             this.markdownArea.removeEventListener('click', this._boundListeners.updateMarkdownToolbar);
             this.markdownArea.removeEventListener('focus', this._boundListeners.updateMarkdownToolbar);
+            this.markdownArea.removeEventListener('scroll', this._boundListeners.syncScrollMarkdown);
         }
 
         if (this.wysiwygTabButton) {
@@ -2077,6 +2131,9 @@ class MarkdownWYSIWYG {
         this._boundListeners = null;
         this.editableArea = null;
         this.markdownArea = null;
+        this.markdownLineNumbersDiv = null;
+        this.markdownTextareaWrapper = null;
+        this.markdownEditorContainer = null;
         this.toolbar = null;
         this.contentAreaContainer = null;
         this.tabsContainer = null;

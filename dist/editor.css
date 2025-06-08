@@ -6,7 +6,6 @@
     display: flex;
     flex-direction: column;
     position: relative;
-    /* Needed for absolute positioning of popups */
 }
 
 .md-toolbar {
@@ -58,8 +57,7 @@
     height: 500px;
 }
 
-.md-editable-area,
-.md-markdown-area {
+.md-editable-area {
     height: 100%;
     overflow-y: auto;
     padding: 15px;
@@ -70,6 +68,7 @@
     width: 100%;
     box-sizing: border-box;
     border: none;
+    background-color: #fff;
 }
 
 .md-editable-area h1 {
@@ -188,7 +187,6 @@
     padding: 8px 10px;
     text-align: left;
     min-width: 50px;
-    /* Ensures cells are clickable */
 }
 
 .md-editable-area th {
@@ -196,19 +194,54 @@
     font-weight: bold;
 }
 
-/* Ensure empty cells are visible and have a minimum height for cursor interaction */
 .md-editable-area td:empty::before,
 .md-editable-area th:empty::before {
     content: "\200B";
-    /* Zero-width space */
 }
 
+.md-markdown-editor-container {
+    display: flex;
+    height: 100%;
+    background-color: #fff;
+    color: #333;
+    font-family: 'Menlo', 'Consolas', monospace;
+    display: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.md-markdown-line-numbers {
+    padding: 15px 10px 15px 15px;
+    text-align: right;
+    user-select: none;
+    background-color: #f7f7f7;
+    color: #888;
+    border-right: 1px solid #ddd;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.md-markdown-textarea-wrapper {
+    flex-grow: 1;
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+}
 
 .md-markdown-area {
-    font-family: 'Menlo', 'Consolas', monospace;
+    height: 100%;
+    width: 100%;
+    padding: 15px;
+    border: none;
+    outline: none;
     resize: none;
-    display: none;
+    background-color: transparent;
+    color: inherit;
+    font-family: inherit;
+    box-sizing: border-box;
+    overflow-y: auto;
 }
+
 
 .md-tabs {
     display: flex;
@@ -236,7 +269,6 @@
     font-weight: bold;
     border-bottom: 2px solid #007bff;
     margin-bottom: -1px;
-    /* Overlaps border for seamless look */
 }
 
 .md-tab-button:hover:not(.active) {

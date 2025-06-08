@@ -65,6 +65,7 @@ class MarkdownWYSIWYG {
 
         this._init();
     }
+
     _init() {
         this.editorWrapper = document.createElement('div');
         this.editorWrapper.classList.add('md-wysiwyg-editor-wrapper');
@@ -72,21 +73,13 @@ class MarkdownWYSIWYG {
 
         this._boundListeners = {};
         this._boundListeners.handleSelectionChange = this._handleSelectionChange.bind(this);
-        this._boundListeners.onEditableAreaInput = this._onEditableAreaInput.bind(this);
-        this._boundListeners.onEditableAreaKeyDown = this._onEditableAreaKeyDown.bind(this);
         this._boundListeners.updateWysiwygToolbar = this._updateWysiwygToolbarActiveStates.bind(this);
-        this._boundListeners.onMarkdownAreaInput = this._onMarkdownAreaInput.bind(this);
-        this._boundListeners.onMarkdownAreaKeyDown = this._onMarkdownAreaKeyDown.bind(this);
         this._boundListeners.updateMarkdownToolbar = this._updateMarkdownToolbarActiveStates.bind(this);
         this._boundListeners.onWysiwygTabClick = () => this.switchToMode('wysiwyg');
         this._boundListeners.onMarkdownTabClick = () => this.switchToMode('markdown');
-
         this._boundListeners.closeTableGridOnClickOutside = this._closeTableGridOnClickOutside.bind(this);
-        this._boundListeners.closeTableGridOnEsc = this._closeTableGridOnEsc.bind(this);
-
         this._boundListeners.onEditableAreaClickForTable = this._handleEditableAreaClickForTable.bind(this);
         this._boundListeners.closeContextualTableToolbarOnClickOutside = this._closeContextualTableToolbarOnClickOutside.bind(this);
-        this._boundListeners.closeContextualTableToolbarOnEsc = this._closeContextualTableToolbarOnEsc.bind(this);
 
         this.toolbarButtonListeners = [];
         if (this.options.showToolbar) {
@@ -96,7 +89,6 @@ class MarkdownWYSIWYG {
         this._createTabs();
         this._createTableGridSelector();
         this._createContextualTableToolbar();
-
 
         this.switchToMode(this.currentMode, true);
         this.setValue(this.options.initialValue || '', true);
@@ -163,6 +155,7 @@ class MarkdownWYSIWYG {
         this.contextualTableToolbar.style.top = `${top}px`;
         this.contextualTableToolbar.style.left = `${left}px`;
 
+        this._boundListeners.closeContextualTableToolbarOnEsc = (e) => this._handlePopupEscKey(e, this._hideContextualTableToolbar.bind(this));
         document.addEventListener('click', this._boundListeners.closeContextualTableToolbarOnClickOutside, true);
         document.addEventListener('keydown', this._boundListeners.closeContextualTableToolbarOnEsc, true);
     }
@@ -173,7 +166,9 @@ class MarkdownWYSIWYG {
         }
         this.currentTableSelectionInfo = null;
         document.removeEventListener('click', this._boundListeners.closeContextualTableToolbarOnClickOutside, true);
-        document.removeEventListener('keydown', this._boundListeners.closeContextualTableToolbarOnEsc, true);
+        if (this._boundListeners.closeContextualTableToolbarOnEsc) {
+            document.removeEventListener('keydown', this._boundListeners.closeContextualTableToolbarOnEsc, true);
+        }
     }
 
     _closeContextualTableToolbarOnClickOutside(event) {
@@ -185,10 +180,10 @@ class MarkdownWYSIWYG {
         } else {
         }
     }
-
-    _closeContextualTableToolbarOnEsc(event) {
+    
+    _handlePopupEscKey(event, hideMethod) {
         if (event.key === 'Escape') {
-            this._hideContextualTableToolbar();
+            hideMethod();
             event.preventDefault();
             event.stopPropagation();
         }
@@ -225,7 +220,6 @@ class MarkdownWYSIWYG {
         const { row: currentRow, table } = this.currentTableSelectionInfo;
         const parentSection = currentRow.parentNode;
         if (!parentSection || !['TBODY', 'THEAD', 'TFOOT'].includes(parentSection.nodeName)) {
-            console.warn("Could not find table section (tbody, thead, tfoot) for current row.");
             return;
         }
 
@@ -255,9 +249,7 @@ class MarkdownWYSIWYG {
             this.currentTableSelectionInfo.rowIndex = newRow.rowIndex;
         }
 
-        this._pushToUndoStack(this.editableArea.innerHTML);
-        if (this.options.onUpdate) this.options.onUpdate(this.getValue());
-        this._updateWysiwygToolbarActiveStates();
+        this._finalizeUpdate(this.editableArea.innerHTML);
         this._showContextualTableToolbar(cellToFocus || newRow.cells[0]);
     }
 
@@ -291,10 +283,8 @@ class MarkdownWYSIWYG {
             this.currentTableSelectionInfo.cell = newFocusedCellInCurrentRow;
             this.currentTableSelectionInfo.cellIndex = newFocusedCellInCurrentRow.cellIndex;
         }
-
-        this._pushToUndoStack(this.editableArea.innerHTML);
-        if (this.options.onUpdate) this.options.onUpdate(this.getValue());
-        this._updateWysiwygToolbarActiveStates();
+        
+        this._finalizeUpdate(this.editableArea.innerHTML);
         this._showContextualTableToolbar(newFocusedCellInCurrentRow || currentCell);
     }
 
@@ -319,7 +309,6 @@ class MarkdownWYSIWYG {
         sel.removeAllRanges();
         sel.addRange(range);
     }
-
 
     _createTableGridSelector() {
         this.tableGridSelector = document.createElement('div');
@@ -404,7 +393,8 @@ class MarkdownWYSIWYG {
         if (gridRect.left < 10) {
             this.tableGridSelector.style.left = `${10 - editorRect.left}px`;
         }
-
+        
+        this._boundListeners.closeTableGridOnEsc = (e) => this._handlePopupEscKey(e, this._hideTableGridSelector.bind(this));
         document.addEventListener('click', this._boundListeners.closeTableGridOnClickOutside, true);
         document.addEventListener('keydown', this._boundListeners.closeTableGridOnEsc, true);
     }
@@ -414,7 +404,9 @@ class MarkdownWYSIWYG {
         this.tableGridSelector.style.display = 'none';
         this.savedRangeInfo = null;
         document.removeEventListener('click', this._boundListeners.closeTableGridOnClickOutside, true);
-        document.removeEventListener('keydown', this._boundListeners.closeTableGridOnEsc, true);
+        if (this._boundListeners.closeTableGridOnEsc) {
+             document.removeEventListener('keydown', this._boundListeners.closeTableGridOnEsc, true);
+        }
     }
 
     _closeTableGridOnClickOutside(event) {
@@ -424,14 +416,6 @@ class MarkdownWYSIWYG {
             event.target !== tableButton &&
             !tableButton.contains(event.target)) {
             this._hideTableGridSelector();
-        }
-    }
-
-    _closeTableGridOnEsc(event) {
-        if (event.key === 'Escape') {
-            this._hideTableGridSelector();
-            event.preventDefault();
-            event.stopPropagation();
         }
     }
 
@@ -467,34 +451,37 @@ class MarkdownWYSIWYG {
         this._performInsertTable(rows, cols);
         this._hideTableGridSelector();
     }
-
-
-    _onEditableAreaInput(e) {
-        if (this.currentMode !== 'wysiwyg') return;
+    
+    _onAreaInput(e, getContentFn, updateToolbarFn) {
         if (!this.isUpdatingFromUndoRedo && e.inputType !== 'historyUndo' && e.inputType !== 'historyRedo') {
-            this._pushToUndoStack(this.editableArea.innerHTML);
+            this._pushToUndoStack(getContentFn());
         }
         if (this.options.onUpdate) this.options.onUpdate(this.getValue());
-        this._updateWysiwygToolbarActiveStates();
+        updateToolbarFn();
     }
-    _onEditableAreaKeyDown(e) {
-        if (this.currentMode !== 'wysiwyg') return;
-        this._handleKeyDownShared(e, this.editableArea);
-        setTimeout(() => this._updateWysiwygToolbarActiveStates(), 0);
+
+    _onAreaKeyDown(e, areaElement, updateToolbarFn) {
+        this._handleKeyDownShared(e, areaElement);
+        setTimeout(() => updateToolbarFn(), 0);
     }
-    _onMarkdownAreaInput(e) {
-        if (this.currentMode !== 'markdown') return;
-        if (!this.isUpdatingFromUndoRedo && e.inputType !== 'historyUndo' && e.inputType !== 'historyRedo') {
-            this._pushToUndoStack(this.markdownArea.value);
+    
+    _finalizeUpdate(contentForUndo) {
+        if (contentForUndo === undefined) {
+            if (this.currentMode === 'wysiwyg') {
+                contentForUndo = this.editableArea.innerHTML;
+            } else {
+                contentForUndo = this.markdownArea.value;
+            }
+        }
+        
+        if (contentForUndo !== undefined && !this.isUpdatingFromUndoRedo) {
+            this._pushToUndoStack(contentForUndo);
         }
         if (this.options.onUpdate) this.options.onUpdate(this.getValue());
-        this._updateMarkdownToolbarActiveStates();
+        this._updateToolbarActiveStates();
     }
-    _onMarkdownAreaKeyDown(e) {
-        if (this.currentMode !== 'markdown') return;
-        this._handleKeyDownShared(e, this.markdownArea);
-        setTimeout(() => this._updateMarkdownToolbarActiveStates(), 0);
-    }
+
+
     _createToolbar() {
         this.toolbar = document.createElement('div');
         this.toolbar.classList.add('md-toolbar');
@@ -512,6 +499,7 @@ class MarkdownWYSIWYG {
         });
         this.editorWrapper.appendChild(this.toolbar);
     }
+
     _createEditorContentArea() {
         this.contentAreaContainer = document.createElement('div');
         this.contentAreaContainer.classList.add('md-editor-content-area');
@@ -526,6 +514,7 @@ class MarkdownWYSIWYG {
         this.contentAreaContainer.appendChild(this.markdownArea);
         this.editorWrapper.appendChild(this.contentAreaContainer);
     }
+
     _createTabs() {
         this.tabsContainer = document.createElement('div');
         this.tabsContainer.classList.add('md-tabs');
@@ -541,56 +530,58 @@ class MarkdownWYSIWYG {
         this.tabsContainer.appendChild(this.markdownTabButton);
         this.editorWrapper.appendChild(this.tabsContainer);
     }
+    
+    _setModeUI(activeArea, inactiveArea, activeTabButton, inactiveTabButton) {
+        activeArea.style.display = 'block';
+        inactiveArea.style.display = 'none';
+        activeTabButton.classList.add('active');
+        inactiveTabButton.classList.remove('active');
+        activeArea.focus();
+    }
+
     switchToMode(mode, isInitialSetup = false) {
         if (this.currentMode === mode && !isInitialSetup) return;
         this._hideTableGridSelector();
         this._hideContextualTableToolbar();
+        
         const previousContent = this.currentMode === 'wysiwyg' ? this.editableArea.innerHTML : this.markdownArea.value;
         this.currentMode = mode;
+
         if (mode === 'wysiwyg') {
             if (!isInitialSetup) {
                 this.editableArea.innerHTML = this._markdownToHtml(this.markdownArea.value);
             }
-            this.editableArea.style.display = 'block';
-            this.markdownArea.style.display = 'none';
-            this.wysiwygTabButton.classList.add('active');
-            this.markdownTabButton.classList.remove('active');
-            this.editableArea.focus();
-            if (!isInitialSetup && previousContent !== this.editableArea.innerHTML) {
-                this.undoStack = [this.editableArea.innerHTML];
-                this.redoStack = [];
-            } else if (isInitialSetup || this.undoStack.length === 0) {
-                this.undoStack = [this.editableArea.innerHTML];
-                this.redoStack = [];
-            }
+            this._setModeUI(this.editableArea, this.markdownArea, this.wysiwygTabButton, this.markdownTabButton);
         } else {
             if (!isInitialSetup) {
                 this.markdownArea.value = this._htmlToMarkdown(this.editableArea);
             }
-            this.editableArea.style.display = 'none';
-            this.markdownArea.style.display = 'block';
-            this.wysiwygTabButton.classList.remove('active');
-            this.markdownTabButton.classList.add('active');
-            this.markdownArea.focus();
-            if (!isInitialSetup && previousContent !== this.markdownArea.value) {
-                this.undoStack = [this.markdownArea.value];
-                this.redoStack = [];
-            } else if (isInitialSetup || this.undoStack.length === 0) {
-                this.undoStack = [this.markdownArea.value];
-                this.redoStack = [];
-            }
+            this._setModeUI(this.markdownArea, this.editableArea, this.markdownTabButton, this.wysiwygTabButton);
         }
+        
+        const currentEditorContent = (mode === 'wysiwyg') ? this.editableArea.innerHTML : this.markdownArea.value;
+        if (!isInitialSetup && previousContent !== currentEditorContent) {
+            this.undoStack = [currentEditorContent];
+            this.redoStack = [];
+        } else if (isInitialSetup || this.undoStack.length === 0) {
+            this.undoStack = [currentEditorContent];
+            this.redoStack = [];
+        }
+
         this._updateToolbarActiveStates();
     }
+
     _handleSelectionChange() {
         this._updateToolbarActiveStates();
     }
+
     _clearToolbarActiveStates() {
         this.options.buttons.forEach(btnConfig => {
             const buttonEl = this.toolbar.querySelector(`.md-toolbar-button-${btnConfig.id}`);
             if (buttonEl) buttonEl.classList.remove('active');
         });
     }
+
     _updateToolbarActiveStates() {
         this._clearToolbarActiveStates();
         if (this.currentMode === 'wysiwyg' && document.activeElement === this.editableArea) {
@@ -599,6 +590,7 @@ class MarkdownWYSIWYG {
             this._updateMarkdownToolbarActiveStates();
         }
     }
+
     _updateWysiwygToolbarActiveStates() {
         const selection = window.getSelection();
         if (!selection || selection.rangeCount === 0) return;
@@ -680,7 +672,6 @@ class MarkdownWYSIWYG {
                 isActive = false; 
             }
 
-
             if (isActive) {
                 buttonEl.classList.add('active');
             } else {
@@ -688,6 +679,7 @@ class MarkdownWYSIWYG {
             }
         });
     }
+
     _updateMarkdownToolbarActiveStates() {
         if (!this.markdownArea || document.activeElement !== this.markdownArea) return;
         const textarea = this.markdownArea;
@@ -700,7 +692,6 @@ class MarkdownWYSIWYG {
 
         if (indentButton) indentButton.disabled = true;
         if (outdentButton) outdentButton.disabled = true;
-
 
         this.options.buttons.forEach(btnConfig => {
             if (btnConfig.id === 'table') return;
@@ -888,19 +879,27 @@ class MarkdownWYSIWYG {
             }
         });
     }
+
     _attachEventListeners() {
+        this._boundListeners.onEditableAreaInput = (e) => this._onAreaInput(e, () => this.editableArea.innerHTML, this._boundListeners.updateWysiwygToolbar);
+        this._boundListeners.onMarkdownAreaInput = (e) => this._onAreaInput(e, () => this.markdownArea.value, this._boundListeners.updateMarkdownToolbar);
+        this._boundListeners.onEditableAreaKeyDown = (e) => this._onAreaKeyDown(e, this.editableArea, this._boundListeners.updateWysiwygToolbar);
+        this._boundListeners.onMarkdownAreaKeyDown = (e) => this._onAreaKeyDown(e, this.markdownArea, this._boundListeners.updateMarkdownToolbar);
+
         this.editableArea.addEventListener('input', this._boundListeners.onEditableAreaInput);
         this.editableArea.addEventListener('keydown', this._boundListeners.onEditableAreaKeyDown);
         this.editableArea.addEventListener('keyup', this._boundListeners.updateWysiwygToolbar);
         this.editableArea.addEventListener('click', this._boundListeners.updateWysiwygToolbar);
         this.editableArea.addEventListener('click', this._boundListeners.onEditableAreaClickForTable);
         this.editableArea.addEventListener('focus', this._boundListeners.updateWysiwygToolbar);
+        
         this.markdownArea.addEventListener('input', this._boundListeners.onMarkdownAreaInput);
         this.markdownArea.addEventListener('keydown', this._boundListeners.onMarkdownAreaKeyDown);
         this.markdownArea.addEventListener('keyup', this._boundListeners.updateMarkdownToolbar);
         this.markdownArea.addEventListener('click', this._boundListeners.updateMarkdownToolbar);
         this.markdownArea.addEventListener('focus', this._boundListeners.updateMarkdownToolbar);
     }
+
     _handleKeyDownShared(e, targetArea) {
         if (e.key === 'Tab') {
             e.preventDefault();
@@ -973,6 +972,7 @@ class MarkdownWYSIWYG {
             e.preventDefault(); this._redo();
         }
     }
+
     _findParentElement(node, tagNameOrNames) {
         if (!node) return null;
         const tagNames = Array.isArray(tagNameOrNames) ? tagNameOrNames.map(n => n.toUpperCase()) : [tagNameOrNames.toUpperCase()];
@@ -983,6 +983,7 @@ class MarkdownWYSIWYG {
         }
         return null;
     }
+
     _pushToUndoStack(content) {
         const stack = this.undoStack;
         if (stack.length > 0 && stack[stack.length - 1] === content) return;
@@ -990,35 +991,37 @@ class MarkdownWYSIWYG {
         this.redoStack = [];
         if (stack.length > 50) stack.shift();
     }
+    
+    _performUndoRedo(sourceStack, targetStack, isUndoOperation) {
+        this.isUpdatingFromUndoRedo = true;
+        const canProceed = isUndoOperation ? sourceStack.length > 1 : sourceStack.length > 0;
+    
+        if (canProceed) {
+            const stateToMove = sourceStack.pop();
+            targetStack.push(stateToMove);
+    
+            const contentToRestore = isUndoOperation ? sourceStack[sourceStack.length - 1] : stateToMove;
+    
+            if (this.currentMode === 'wysiwyg') {
+                this.editableArea.innerHTML = contentToRestore;
+            } else {
+                this.markdownArea.value = contentToRestore;
+            }
+            this._moveCursorToEnd();
+            if (this.options.onUpdate) this.options.onUpdate(this.getValue());
+            this._updateToolbarActiveStates();
+        }
+        this.isUpdatingFromUndoRedo = false;
+    }
+
     _undo() {
-        this.isUpdatingFromUndoRedo = true;
-        const stack = this.undoStack;
-        if (stack.length > 1) {
-            const currentState = stack.pop();
-            this.redoStack.push(currentState);
-            const contentToRestore = stack[stack.length - 1];
-            if (this.currentMode === 'wysiwyg') this.editableArea.innerHTML = contentToRestore;
-            else this.markdownArea.value = contentToRestore;
-            this._moveCursorToEnd();
-            if (this.options.onUpdate) this.options.onUpdate(this.getValue());
-            this._updateToolbarActiveStates();
-        }
-        this.isUpdatingFromUndoRedo = false;
+        this._performUndoRedo(this.undoStack, this.redoStack, true);
     }
+    
     _redo() {
-        this.isUpdatingFromUndoRedo = true;
-        const stack = this.redoStack;
-        if (stack.length > 0) {
-            const contentToRestore = stack.pop();
-            this.undoStack.push(contentToRestore);
-            if (this.currentMode === 'wysiwyg') this.editableArea.innerHTML = contentToRestore;
-            else this.markdownArea.value = contentToRestore;
-            this._moveCursorToEnd();
-            if (this.options.onUpdate) this.options.onUpdate(this.getValue());
-            this._updateToolbarActiveStates();
-        }
-        this.isUpdatingFromUndoRedo = false;
+        this._performUndoRedo(this.redoStack, this.undoStack, false);
     }
+
     _moveCursorToEnd() {
         if (this.currentMode === 'wysiwyg') {
             this.editableArea.focus();
@@ -1043,6 +1046,7 @@ class MarkdownWYSIWYG {
             this.markdownArea.setSelectionRange(this.markdownArea.value.length, this.markdownArea.value.length);
         }
     }
+
     _handleToolbarClick(buttonConfig, buttonElement) {
         if (buttonConfig.id === 'table') {
             if (typeof this[buttonConfig.action] === 'function') {
@@ -1059,6 +1063,7 @@ class MarkdownWYSIWYG {
                 this[buttonConfig.action]();
             } else if (buttonConfig.execCommand) {
                 document.execCommand(buttonConfig.execCommand, false, buttonConfig.value || null);
+                 this._finalizeUpdate(this.editableArea.innerHTML);
             }
         } else {
             this.markdownArea.focus();
@@ -1068,8 +1073,12 @@ class MarkdownWYSIWYG {
                 this._applyMarkdownFormatting(buttonConfig);
             }
         }
-
-        this._updateToolbarActiveStates();
+        if (buttonConfig.execCommand || buttonConfig.action) {
+          // Finalize update is called within specific actions or _applyMarkdownFormatting
+          // _updateToolbarActiveStates is called by _finalizeUpdate or at end of _applyMarkdownFormatting
+        } else {
+            this._updateToolbarActiveStates(); // Fallback for buttons not covered by finalize or applyMarkdown
+        }
     }
 
     _insertTableAction(buttonElement) {
@@ -1167,10 +1176,7 @@ class MarkdownWYSIWYG {
             selection.addRange(rangeToUse);
         }
 
-
-        this._pushToUndoStack(this.editableArea.innerHTML);
-        if (this.options.onUpdate) this.options.onUpdate(this.getValue());
-        this._updateWysiwygToolbarActiveStates();
+        this._finalizeUpdate(this.editableArea.innerHTML);
     }
 
     _insertTableMarkdown(rows, cols) {
@@ -1239,33 +1245,33 @@ class MarkdownWYSIWYG {
             textarea.selectionStart = textarea.selectionEnd = start + textToInsert.length;
         }
         textarea.focus();
-
-        this._pushToUndoStack(textarea.value);
-        if (this.options.onUpdate) this.options.onUpdate(this.getValue());
-        this._updateMarkdownToolbarActiveStates();
+        this._finalizeUpdate(textarea.value);
     }
-
 
     _handleIndent() {
         if (this.currentMode === 'wysiwyg') {
             this.editableArea.focus();
             document.execCommand('indent', false, null);
+            this._finalizeUpdate(this.editableArea.innerHTML);
         } else {
             this.markdownArea.focus();
             this._applyMarkdownListIndentInternal();
+            this._finalizeUpdate(this.markdownArea.value);
         }
-        this._updateToolbarActiveStates();
     }
+
     _handleOutdent() {
         if (this.currentMode === 'wysiwyg') {
             this.editableArea.focus();
             document.execCommand('outdent', false, null);
+            this._finalizeUpdate(this.editableArea.innerHTML);
         } else {
             this.markdownArea.focus();
             this._applyMarkdownListOutdentInternal();
+            this._finalizeUpdate(this.markdownArea.value);
         }
-        this._updateToolbarActiveStates();
     }
+
     _applyMarkdownListIndentInternal() {
         const textarea = this.markdownArea;
         const start = textarea.selectionStart;
@@ -1300,6 +1306,7 @@ class MarkdownWYSIWYG {
         textarea.selectionEnd = end + charDiff;
         textarea.focus();
     }
+
     _applyMarkdownListOutdentInternal() {
         const textarea = this.markdownArea;
         const start = textarea.selectionStart;
@@ -1340,6 +1347,7 @@ class MarkdownWYSIWYG {
         textarea.selectionEnd = Math.max(newStart, end + charDiff);
         textarea.focus();
     }
+
     _applyMarkdownFormatting(buttonConfig) {
         const textarea = this.markdownArea;
         const textValue = textarea.value;
@@ -1397,10 +1405,9 @@ class MarkdownWYSIWYG {
         }
         textarea.focus();
         textarea.setSelectionRange(newStart, newEnd);
-        this._pushToUndoStack(textarea.value);
-        if (this.options.onUpdate) this.options.onUpdate(this.getValue());
-        this._updateMarkdownToolbarActiveStates();
+        this._finalizeUpdate(textarea.value);
     }
+
     _wrapMarkdownFormatting(buttonConfig, selectedText, start, end) {
         const textarea = this.markdownArea;
         let replacementText = '';
@@ -1489,10 +1496,9 @@ class MarkdownWYSIWYG {
             textarea.setSelectionRange(start + cursorOffsetStart, start + cursorOffsetEnd);
         }
         textarea.focus();
-        this._pushToUndoStack(textarea.value);
-        if (this.options.onUpdate) this.options.onUpdate(this.getValue());
-        this._updateMarkdownToolbarActiveStates();
+        this._finalizeUpdate(textarea.value);
     }
+
     _insertLink() {
         if (this.currentMode === 'wysiwyg') {
             this.editableArea.focus();
@@ -1510,13 +1516,13 @@ class MarkdownWYSIWYG {
                     selection.addRange(range);
                 }
                 document.execCommand('createLink', false, url);
-                this._pushToUndoStack(this.editableArea.innerHTML);
-                if (this.options.onUpdate) this.options.onUpdate(this.getValue());
+                this._finalizeUpdate(this.editableArea.innerHTML);
             }
         } else {
             this._applyMarkdownFormatting(this.options.buttons.find(b => b.id === 'link'));
         }
     }
+
     _insertHorizontalRuleAction() {
         if (this.currentMode === 'wysiwyg') {
             this.editableArea.focus();
@@ -1554,8 +1560,7 @@ class MarkdownWYSIWYG {
                     }
                 }
             }
-            this._pushToUndoStack(this.editableArea.innerHTML);
-            if (this.options.onUpdate) this.options.onUpdate(this.getValue());
+            this._finalizeUpdate(this.editableArea.innerHTML);
         } else {
             this.markdownArea.focus();
             const textarea = this.markdownArea;
@@ -1571,10 +1576,10 @@ class MarkdownWYSIWYG {
             textarea.value = textarea.value.substring(0, start) + replacementText + textarea.value.substring(textarea.selectionEnd);
             const newCursorPos = start + replacementText.length - 1;
             textarea.selectionStart = textarea.selectionEnd = newCursorPos;
-            this._pushToUndoStack(textarea.value);
-            if (this.options.onUpdate) this.options.onUpdate(this.getValue());
+            this._finalizeUpdate(textarea.value);
         }
     }
+
     _insertCodeBlock() {
         if (this.currentMode === 'wysiwyg') {
             this.editableArea.focus();
@@ -1608,12 +1613,12 @@ class MarkdownWYSIWYG {
                 pAfter.innerHTML = '&#8203;';
                 this.editableArea.appendChild(pAfter);
             }
-            this._pushToUndoStack(this.editableArea.innerHTML);
-            if (this.options.onUpdate) this.options.onUpdate(this.getValue());
+            this._finalizeUpdate(this.editableArea.innerHTML);
         } else {
             this._applyMarkdownFormatting(this.options.buttons.find(b => b.id === 'codeblock'));
         }
     }
+
     _insertInlineCode() {
         if (this.currentMode === 'wysiwyg') {
             this.editableArea.focus();
@@ -1643,15 +1648,14 @@ class MarkdownWYSIWYG {
                 const spaceNode = document.createTextNode('\u200B');
                 this.editableArea.appendChild(spaceNode);
             }
-            this._pushToUndoStack(this.editableArea.innerHTML);
-            if (this.options.onUpdate) this.options.onUpdate(this.getValue());
+            this._finalizeUpdate(this.editableArea.innerHTML);
         } else {
             this._applyMarkdownFormatting(this.options.buttons.find(b => b.id === 'inlinecode'));
         }
     }
+
     _markdownToHtml(markdown) {
         if (typeof marked === 'undefined') {
-            console.warn("Marked.js library not found. Falling back to basic newline-to-br conversion.");
             return markdown.replace(/\n/g, '<br>');
         }
         const markedOptions = {
@@ -1661,6 +1665,7 @@ class MarkdownWYSIWYG {
         };
         return marked.parse(markdown || '', markedOptions);
     }
+
     _htmlToMarkdown(elementOrHtml) {
         let tempDiv;
         if (typeof elementOrHtml === 'string') {
@@ -1681,6 +1686,7 @@ class MarkdownWYSIWYG {
         markdown = markdown.replace(/ +\n/g, '\n');
         return markdown.trim();
     }
+
     _normalizeNodes(parentElement) {
         let currentNode = parentElement.firstChild;
         while (currentNode) {
@@ -1707,11 +1713,13 @@ class MarkdownWYSIWYG {
             currentNode = nextNode;
         }
     }
+
     _isBlockElement(node) {
         if (!node || node.nodeType !== Node.ELEMENT_NODE) return false;
         const blockElements = ['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'UL', 'OL', 'LI', 'BLOCKQUOTE', 'PRE', 'HR', 'TABLE', 'THEAD', 'TBODY', 'TR', 'DIV'];
         return blockElements.includes(node.nodeName);
     }
+
     _processInlineContainerRecursive(element) {
         let markdown = '';
         Array.from(element.childNodes).forEach(child => {
@@ -1719,6 +1727,7 @@ class MarkdownWYSIWYG {
         });
         return markdown;
     }
+
     _listToMarkdownRecursive(listNode, indent = "", listType = null, listCounter = 1) {
         let markdown = '';
         const isOrdered = listNode.nodeName === 'OL';
@@ -1916,6 +1925,7 @@ class MarkdownWYSIWYG {
                 return (node.textContent || '').replace(/  +/g, ' ');
         }
     }
+
     getValue() {
         if (this.currentMode === 'markdown') {
             return this.markdownArea.value;
@@ -1923,6 +1933,7 @@ class MarkdownWYSIWYG {
             return this._htmlToMarkdown(this.editableArea);
         }
     }
+
     setValue(markdown, isInitialSetup = false) {
         const html = this._markdownToHtml(markdown);
         this.editableArea.innerHTML = html;
@@ -1937,6 +1948,7 @@ class MarkdownWYSIWYG {
         }
         this._updateToolbarActiveStates();
     }
+
     destroy() {
         this._hideTableGridSelector();
         if (this.tableGridSelector && this.tableGridSelector.parentNode) {

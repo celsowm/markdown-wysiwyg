@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
 ```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/celsowm/markdown-wysiwyg/dist/editor.css" />
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/celsowm/markdown-wysiwyg/dist/editor.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/celsowm/markdown-wysiwyg@latest/dist/editor.js"></script>
 ```
 
 ## HTML → Markdown Conversion

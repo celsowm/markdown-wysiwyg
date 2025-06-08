@@ -602,10 +602,19 @@ class MarkdownWYSIWYG {
     _updateWysiwygToolbarActiveStates() {
         const selection = window.getSelection();
         if (!selection || selection.rangeCount === 0) return;
+
+        const indentButton = this.toolbar.querySelector(`.md-toolbar-button-indent`);
+        const outdentButton = this.toolbar.querySelector(`.md-toolbar-button-outdent`);
+
+        if (indentButton) indentButton.disabled = true;
+        if (outdentButton) outdentButton.disabled = true;
+
         this.options.buttons.forEach(btnConfig => {
             const buttonEl = this.toolbar.querySelector(`.md-toolbar-button-${btnConfig.id}`);
             if (!buttonEl || btnConfig.id === 'table') return;
+
             let isActive = false;
+
             if (btnConfig.execCommand) {
                 if (btnConfig.execCommand === 'formatBlock' && btnConfig.value) {
                     let blockElement = selection.getRangeAt(0).commonAncestorContainer;
@@ -652,23 +661,26 @@ class MarkdownWYSIWYG {
                     }
                     el = el.parentElement;
                 }
-            } else if (btnConfig.id === 'indent') {
+            } else if (btnConfig.id === 'indent' || btnConfig.id === 'outdent') {
                 const commonAncestor = selection.getRangeAt(0).commonAncestorContainer;
                 const listItem = this._findParentElement(commonAncestor, 'LI');
-                isActive = !!listItem;
-            } else if (btnConfig.id === 'outdent') {
-                const commonAncestor = selection.getRangeAt(0).commonAncestorContainer;
-                const listItem = this._findParentElement(commonAncestor, 'LI');
+                
                 if (listItem) {
-                    const listParent = listItem.parentNode;
-                    if (listParent && (listParent.nodeName === 'UL' || listParent.nodeName === 'OL') &&
-                        listParent.parentNode && listParent.parentNode.nodeName === 'LI') {
-                        isActive = true;
-                    } else if (listParent && document.queryCommandEnabled('outdent')) {
-                        isActive = true;
+                    if (btnConfig.id === 'indent' && indentButton) {
+                        indentButton.disabled = false;
+                    } 
+                    if (btnConfig.id === 'outdent' && outdentButton) {
+                        if (document.queryCommandEnabled('outdent')) {
+                            outdentButton.disabled = false;
+                        } else {
+                            outdentButton.disabled = true;
+                        }
                     }
                 }
+                isActive = false; 
             }
+
+
             if (isActive) {
                 buttonEl.classList.add('active');
             } else {
@@ -682,17 +694,48 @@ class MarkdownWYSIWYG {
         const textValue = textarea.value;
         const selStart = textarea.selectionStart;
         const selEnd = textarea.selectionEnd;
+
+        const indentButton = this.toolbar.querySelector(`.md-toolbar-button-indent`);
+        const outdentButton = this.toolbar.querySelector(`.md-toolbar-button-outdent`);
+
+        if (indentButton) indentButton.disabled = true;
+        if (outdentButton) outdentButton.disabled = true;
+
+
         this.options.buttons.forEach(btnConfig => {
             if (btnConfig.id === 'table') return;
-            if (!btnConfig.type || btnConfig.type === 'block-insert' || btnConfig.id === 'hr') {
-                if (btnConfig.id !== 'indent' && btnConfig.id !== 'outdent') return;
-            }
+            
             const buttonEl = this.toolbar.querySelector(`.md-toolbar-button-${btnConfig.id}`);
             if (!buttonEl) return;
+
             let isActive = false;
             let actualFormatStart = -1;
             let actualFormatEnd = -1;
-            if (btnConfig.type === 'inline' && btnConfig.mdPrefix && btnConfig.mdSuffix) {
+
+            if (btnConfig.id === 'indent') {
+                const lineStart = textValue.lastIndexOf('\n', selStart - 1) + 1;
+                const currentLineFull = textValue.substring(lineStart, textValue.indexOf('\n', lineStart) === -1 ? textValue.length : textValue.indexOf('\n', lineStart));
+                if (selStart !== selEnd || currentLineFull.trim().length > 0) {
+                    if (indentButton) indentButton.disabled = false;
+                }
+                isActive = false;
+            } else if (btnConfig.id === 'outdent') {
+                const selectionStartLineNum = textValue.substring(0, selStart).split('\n').length - 1;
+                const selectionEndLineNum = textValue.substring(0, selEnd).split('\n').length - 1;
+                const allLines = textValue.split('\n');
+                let canOutdentThisSelection = false;
+                for (let i = selectionStartLineNum; i <= selectionEndLineNum; i++) {
+                    if (allLines[i] && allLines[i].match(/^(\s\s+|\t)/)) {
+                        canOutdentThisSelection = true;
+                        break;
+                    }
+                }
+                if (canOutdentThisSelection) {
+                    if (outdentButton) outdentButton.disabled = false;
+                }
+                isActive = false;
+            }
+            else if (btnConfig.type === 'inline' && btnConfig.mdPrefix && btnConfig.mdSuffix) {
                 const prefix = btnConfig.mdPrefix;
                 const suffix = btnConfig.mdSuffix;
                 const prefixLen = prefix.length;
@@ -834,31 +877,14 @@ class MarkdownWYSIWYG {
                         }
                     }
                 }
-            } else if (btnConfig.id === 'indent') {
-                if (selStart !== selEnd) {
-                    isActive = true;
-                } else {
-                    const lineStart = textValue.lastIndexOf('\n', selStart - 1) + 1;
-                    const currentLineFull = textValue.substring(lineStart, textValue.indexOf('\n', lineStart) === -1 ? textValue.length : textValue.indexOf('\n', lineStart));
-                    isActive = currentLineFull.trim().length > 0;
-                }
-            } else if (btnConfig.id === 'outdent') {
-                const selectionStartLineNum = textValue.substring(0, selStart).split('\n').length - 1;
-                const selectionEndLineNum = textValue.substring(0, selEnd).split('\n').length - 1;
-                const allLines = textValue.split('\n');
-                let canOutdentThisSelection = false;
-                for (let i = selectionStartLineNum; i <= selectionEndLineNum; i++) {
-                    if (allLines[i] && allLines[i].match(/^(  |\t)/)) {
-                        canOutdentThisSelection = true;
-                        break;
-                    }
-                }
-                isActive = canOutdentThisSelection;
             }
-            if (isActive) {
-                buttonEl.classList.add('active');
-            } else {
-                buttonEl.classList.remove('active');
+            
+            if (buttonEl && btnConfig.id !== 'indent' && btnConfig.id !== 'outdent') {
+                if (isActive) {
+                    buttonEl.classList.add('active');
+                } else {
+                    buttonEl.classList.remove('active');
+                }
             }
         });
     }

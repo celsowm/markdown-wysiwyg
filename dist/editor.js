@@ -1,4 +1,3 @@
-// SVG Icons
 const ICON_HEADING = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 12h12M6 20V4M10 20V4M14 20V4M18 20V4"/></svg>`;
 const ICON_BOLD = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></svg>`;
 const ICON_ITALIC = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg>`;
@@ -180,7 +179,7 @@ class MarkdownWYSIWYG {
         } else {
         }
     }
-    
+
     _handlePopupEscKey(event, hideMethod) {
         if (event.key === 'Escape') {
             hideMethod();
@@ -283,7 +282,7 @@ class MarkdownWYSIWYG {
             this.currentTableSelectionInfo.cell = newFocusedCellInCurrentRow;
             this.currentTableSelectionInfo.cellIndex = newFocusedCellInCurrentRow.cellIndex;
         }
-        
+
         this._finalizeUpdate(this.editableArea.innerHTML);
         this._showContextualTableToolbar(newFocusedCellInCurrentRow || currentCell);
     }
@@ -393,7 +392,7 @@ class MarkdownWYSIWYG {
         if (gridRect.left < 10) {
             this.tableGridSelector.style.left = `${10 - editorRect.left}px`;
         }
-        
+
         this._boundListeners.closeTableGridOnEsc = (e) => this._handlePopupEscKey(e, this._hideTableGridSelector.bind(this));
         document.addEventListener('click', this._boundListeners.closeTableGridOnClickOutside, true);
         document.addEventListener('keydown', this._boundListeners.closeTableGridOnEsc, true);
@@ -405,7 +404,7 @@ class MarkdownWYSIWYG {
         this.savedRangeInfo = null;
         document.removeEventListener('click', this._boundListeners.closeTableGridOnClickOutside, true);
         if (this._boundListeners.closeTableGridOnEsc) {
-             document.removeEventListener('keydown', this._boundListeners.closeTableGridOnEsc, true);
+            document.removeEventListener('keydown', this._boundListeners.closeTableGridOnEsc, true);
         }
     }
 
@@ -451,7 +450,7 @@ class MarkdownWYSIWYG {
         this._performInsertTable(rows, cols);
         this._hideTableGridSelector();
     }
-    
+
     _onAreaInput(e, getContentFn, updateToolbarFn) {
         if (!this.isUpdatingFromUndoRedo && e.inputType !== 'historyUndo' && e.inputType !== 'historyRedo') {
             this._pushToUndoStack(getContentFn());
@@ -464,7 +463,7 @@ class MarkdownWYSIWYG {
         this._handleKeyDownShared(e, areaElement);
         setTimeout(() => updateToolbarFn(), 0);
     }
-    
+
     _finalizeUpdate(contentForUndo) {
         if (contentForUndo === undefined) {
             if (this.currentMode === 'wysiwyg') {
@@ -473,7 +472,7 @@ class MarkdownWYSIWYG {
                 contentForUndo = this.markdownArea.value;
             }
         }
-        
+
         if (contentForUndo !== undefined && !this.isUpdatingFromUndoRedo) {
             this._pushToUndoStack(contentForUndo);
         }
@@ -530,7 +529,7 @@ class MarkdownWYSIWYG {
         this.tabsContainer.appendChild(this.markdownTabButton);
         this.editorWrapper.appendChild(this.tabsContainer);
     }
-    
+
     _setModeUI(activeArea, inactiveArea, activeTabButton, inactiveTabButton) {
         activeArea.style.display = 'block';
         inactiveArea.style.display = 'none';
@@ -543,7 +542,7 @@ class MarkdownWYSIWYG {
         if (this.currentMode === mode && !isInitialSetup) return;
         this._hideTableGridSelector();
         this._hideContextualTableToolbar();
-        
+
         const previousContent = this.currentMode === 'wysiwyg' ? this.editableArea.innerHTML : this.markdownArea.value;
         this.currentMode = mode;
 
@@ -558,7 +557,7 @@ class MarkdownWYSIWYG {
             }
             this._setModeUI(this.markdownArea, this.editableArea, this.markdownTabButton, this.wysiwygTabButton);
         }
-        
+
         const currentEditorContent = (mode === 'wysiwyg') ? this.editableArea.innerHTML : this.markdownArea.value;
         if (!isInitialSetup && previousContent !== currentEditorContent) {
             this.undoStack = [currentEditorContent];
@@ -656,11 +655,11 @@ class MarkdownWYSIWYG {
             } else if (btnConfig.id === 'indent' || btnConfig.id === 'outdent') {
                 const commonAncestor = selection.getRangeAt(0).commonAncestorContainer;
                 const listItem = this._findParentElement(commonAncestor, 'LI');
-                
+
                 if (listItem) {
                     if (btnConfig.id === 'indent' && indentButton) {
                         indentButton.disabled = false;
-                    } 
+                    }
                     if (btnConfig.id === 'outdent' && outdentButton) {
                         if (document.queryCommandEnabled('outdent')) {
                             outdentButton.disabled = false;
@@ -669,7 +668,7 @@ class MarkdownWYSIWYG {
                         }
                     }
                 }
-                isActive = false; 
+                isActive = false;
             }
 
             if (isActive) {
@@ -695,7 +694,7 @@ class MarkdownWYSIWYG {
 
         this.options.buttons.forEach(btnConfig => {
             if (btnConfig.id === 'table') return;
-            
+
             const buttonEl = this.toolbar.querySelector(`.md-toolbar-button-${btnConfig.id}`);
             if (!buttonEl) return;
 
@@ -869,7 +868,7 @@ class MarkdownWYSIWYG {
                     }
                 }
             }
-            
+
             if (buttonEl && btnConfig.id !== 'indent' && btnConfig.id !== 'outdent') {
                 if (isActive) {
                     buttonEl.classList.add('active');
@@ -892,7 +891,7 @@ class MarkdownWYSIWYG {
         this.editableArea.addEventListener('click', this._boundListeners.updateWysiwygToolbar);
         this.editableArea.addEventListener('click', this._boundListeners.onEditableAreaClickForTable);
         this.editableArea.addEventListener('focus', this._boundListeners.updateWysiwygToolbar);
-        
+
         this.markdownArea.addEventListener('input', this._boundListeners.onMarkdownAreaInput);
         this.markdownArea.addEventListener('keydown', this._boundListeners.onMarkdownAreaKeyDown);
         this.markdownArea.addEventListener('keyup', this._boundListeners.updateMarkdownToolbar);
@@ -991,17 +990,17 @@ class MarkdownWYSIWYG {
         this.redoStack = [];
         if (stack.length > 50) stack.shift();
     }
-    
+
     _performUndoRedo(sourceStack, targetStack, isUndoOperation) {
         this.isUpdatingFromUndoRedo = true;
         const canProceed = isUndoOperation ? sourceStack.length > 1 : sourceStack.length > 0;
-    
+
         if (canProceed) {
             const stateToMove = sourceStack.pop();
             targetStack.push(stateToMove);
-    
+
             const contentToRestore = isUndoOperation ? sourceStack[sourceStack.length - 1] : stateToMove;
-    
+
             if (this.currentMode === 'wysiwyg') {
                 this.editableArea.innerHTML = contentToRestore;
             } else {
@@ -1017,7 +1016,7 @@ class MarkdownWYSIWYG {
     _undo() {
         this._performUndoRedo(this.undoStack, this.redoStack, true);
     }
-    
+
     _redo() {
         this._performUndoRedo(this.redoStack, this.undoStack, false);
     }
@@ -1063,7 +1062,7 @@ class MarkdownWYSIWYG {
                 this[buttonConfig.action]();
             } else if (buttonConfig.execCommand) {
                 document.execCommand(buttonConfig.execCommand, false, buttonConfig.value || null);
-                 this._finalizeUpdate(this.editableArea.innerHTML);
+                this._finalizeUpdate(this.editableArea.innerHTML);
             }
         } else {
             this.markdownArea.focus();
@@ -1074,10 +1073,8 @@ class MarkdownWYSIWYG {
             }
         }
         if (buttonConfig.execCommand || buttonConfig.action) {
-          // Finalize update is called within specific actions or _applyMarkdownFormatting
-          // _updateToolbarActiveStates is called by _finalizeUpdate or at end of _applyMarkdownFormatting
         } else {
-            this._updateToolbarActiveStates(); // Fallback for buttons not covered by finalize or applyMarkdown
+            this._updateToolbarActiveStates();
         }
     }
 
@@ -1720,15 +1717,15 @@ class MarkdownWYSIWYG {
         return blockElements.includes(node.nodeName);
     }
 
-    _processInlineContainerRecursive(element) {
+    _processInlineContainerRecursive(element, options = {}) {
         let markdown = '';
         Array.from(element.childNodes).forEach(child => {
-            markdown += this._nodeToMarkdownRecursive(child);
+            markdown += this._nodeToMarkdownRecursive(child, options);
         });
         return markdown;
     }
 
-    _listToMarkdownRecursive(listNode, indent = "", listType = null, listCounter = 1) {
+    _listToMarkdownRecursive(listNode, indent = "", listType = null, listCounter = 1, options = {}) {
         let markdown = '';
         const isOrdered = listNode.nodeName === 'OL';
 
@@ -1744,9 +1741,9 @@ class MarkdownWYSIWYG {
                         if (listItemContent.trim().length > 0 && !listItemContent.endsWith('\n')) {
                             listItemContent += '\n';
                         }
-                        listItemContent += this._listToMarkdownRecursive(childNode, indent + '  ', childNode.nodeName, 1);
+                        listItemContent += this._listToMarkdownRecursive(childNode, indent + '  ', childNode.nodeName, 1, options);
                     } else {
-                        listItemContent += this._nodeToMarkdownRecursive(childNode);
+                        listItemContent += this._nodeToMarkdownRecursive(childNode, options);
                     }
                 });
                 const lines = listItemContent.trim().split('\n');
@@ -1772,83 +1769,153 @@ class MarkdownWYSIWYG {
     _cellContentToMarkdown(cellNode) {
         let markdown = '';
         Array.from(cellNode.childNodes).forEach(child => {
-            if (child.nodeName === 'P') {
-                let pContent = this._processInlineContainerRecursive(child).replace(/\n\s*\n/g, ' ').trim();
-                markdown += pContent;
-                if (child.nextSibling) markdown += ' ';
-            } else if (child.nodeName === 'BR') {
-                markdown += '<br>';
-            }
-            else {
-                markdown += this._nodeToMarkdownRecursive(child);
-            }
+            markdown += this._nodeToMarkdownRecursive(child, { inTableCell: true });
         });
-        markdown = markdown.replace(/<br>\s*<br>/gi, '<br>');
-        markdown = markdown.replace(/\s+/g, ' ').trim();
-        markdown = markdown.replace(/\|/g, '\\|');
-        return markdown;
+        return markdown.trim();
     }
 
-    _nodeToMarkdownRecursive(node) {
+    _nodeToHtmlForTableCell(node) {
+        const clone = node.cloneNode(true);
+
+        const textWalker = document.createTreeWalker(clone, NodeFilter.SHOW_TEXT, null, false);
+        let currentTextNode;
+        while (currentTextNode = textWalker.nextNode()) {
+            currentTextNode.textContent = currentTextNode.textContent.replace(/\|/g, '\\|');
+        }
+
+        const textNodesToProcess = [];
+        const preCodeElements = Array.from(clone.querySelectorAll('pre, code'));
+
+        const collectTextNodes = (currentNode) => {
+            const isInPreCode = preCodeElements.some(pcElement => pcElement.contains(currentNode) && pcElement !== currentNode);
+
+            if (currentNode.nodeType === Node.TEXT_NODE) {
+                if (!isInPreCode && currentNode.textContent.includes('\n')) {
+                    textNodesToProcess.push(currentNode);
+                }
+            } else if (currentNode.nodeType === Node.ELEMENT_NODE) {
+                if (currentNode.nodeName !== 'PRE' && currentNode.nodeName !== 'CODE') {
+                    Array.from(currentNode.childNodes).forEach(collectTextNodes);
+                }
+            }
+        };
+
+        Array.from(clone.childNodes).forEach(collectTextNodes);
+
+        for (let i = textNodesToProcess.length - 1; i >= 0; i--) {
+            const tn = textNodesToProcess[i];
+            if (tn.parentNode && tn.textContent.includes('\n')) {
+                const fragments = tn.textContent.split('\n');
+                const parent = tn.parentNode;
+                if (parent) {
+                    fragments.forEach((fragment, idx) => {
+                        if (fragment.length > 0) parent.insertBefore(document.createTextNode(fragment), tn);
+                        if (idx < fragments.length - 1) parent.insertBefore(document.createElement('br'), tn);
+                    });
+                    parent.removeChild(tn);
+                }
+            }
+        }
+        
+        const tempSerializer = document.createElement('div');
+        tempSerializer.appendChild(clone);
+        return tempSerializer.innerHTML;
+    }
+
+    _nodeToMarkdownRecursive(node, options = {}) {
         switch (node.nodeName) {
             case '#text':
-                if (this._findParentElement(node, 'PRE')) return node.textContent;
-                return node.textContent.replace(/  +/g, ' ');
-            case 'BR': return '\n';
-            case 'B': case 'STRONG': return `**${this._processInlineContainerRecursive(node).trim()}**`;
-            case 'I': case 'EM': return `*${this._processInlineContainerRecursive(node).trim()}*`;
-            case 'S': case 'DEL': case 'STRIKE': return `~~${this._processInlineContainerRecursive(node).trim()}~~`;
-            case 'H1': return `# ${this._processInlineContainerRecursive(node).trim()}\n\n`;
-            case 'H2': return `## ${this._processInlineContainerRecursive(node).trim()}\n\n`;
-            case 'H3': return `### ${this._processInlineContainerRecursive(node).trim()}\n\n`;
-            case 'P':
-                const pParent = node.parentNode;
-                const isInsideTableCell = pParent && (pParent.nodeName === 'TD' || pParent.nodeName === 'TH');
-                const isInsideListItemOrBlockquote = pParent && (pParent.nodeName === 'LI' || pParent.nodeName === 'BLOCKQUOTE');
-                let pContent = this._processInlineContainerRecursive(node).trim();
-                if (isInsideTableCell) {
-                    return pContent.replace(/\n\n/g, ' ');
+                let text = node.textContent;
+                if (!(options && options.inTableCell) && !this._findParentElement(node, 'PRE')) {
+                    text = text.replace(/  +/g, ' ');
                 }
-                if (isInsideListItemOrBlockquote) {
-                    return pContent.replace(/\n\s*\n/g, '\n').trim() + (pContent ? '\n' : '');
+                if (options && options.inTableCell) {
+                    text = text.replace(/\|/g, '\\|');
+                    if (!this._findParentElement(node, 'PRE')) {
+                        text = text.replace(/\n/g, '<br>');
+                    }
                 }
-                return pContent ? `${pContent}\n\n` : '';
-            case 'UL': case 'OL':
-                let listMd = this._listToMarkdownRecursive(node, "", node.nodeName, 1);
-                if (listMd.trim().length > 0 && !listMd.endsWith('\n\n')) {
-                    if (!listMd.endsWith('\n')) listMd += '\n';
-                    listMd += '\n';
+                return text;
+            case 'BR':
+                if (options && options.inTableCell) {
+                    return '<br>';
                 }
-                return listMd;
-            case 'LI':
-                return this._processInlineContainerRecursive(node).trim();
-            case 'BLOCKQUOTE':
-                const quoteContentRaw = this._processInlineContainerRecursive(node);
-                const quoteLines = quoteContentRaw.split('\n').map(line => line.trim());
-                const nonEmptyLines = quoteLines.filter(line => line.length > 0);
-                return nonEmptyLines.map(line => `> ${line}`).join('\n') + '\n\n';
-            case 'PRE':
-                if (node.firstChild && node.firstChild.nodeName === 'CODE') {
-                    const codeElement = node.firstChild;
-                    const langMatch = codeElement.className.match(/language-(\S+)/);
-                    const lang = langMatch ? langMatch[1] : '';
-                    let preContent = codeElement.textContent;
-                    if (preContent.length > 0 && !preContent.endsWith('\n')) preContent += '\n';
-                    return `\`\`\`${lang}\n${preContent}\`\`\`\n\n`;
-                }
-                let preTextContent = node.textContent;
-                if (preTextContent.length > 0 && !preTextContent.endsWith('\n')) preTextContent += '\n';
-                return `\`\`\`\n${preTextContent}\`\`\`\n\n`;
-            case 'CODE':
-                if (!this._findParentElement(node, 'PRE')) {
-                    return `\`${node.textContent.trim()}\``;
-                }
-                return '';
+                return '\n';
+            case 'B': case 'STRONG': return `**${this._processInlineContainerRecursive(node, options).trim()}**`;
+            case 'I': case 'EM': return `*${this._processInlineContainerRecursive(node, options).trim()}*`;
+            case 'S': case 'DEL': case 'STRIKE': return `~~${this._processInlineContainerRecursive(node, options).trim()}~~`;
             case 'A':
                 const href = node.getAttribute('href') || '';
-                const linkText = this._processInlineContainerRecursive(node).trim();
+                const linkText = this._processInlineContainerRecursive(node, options).trim();
                 return `[${linkText}](${href})`;
-            case 'HR': return '\n---\n\n';
+            case 'CODE':
+                if (!this._findParentElement(node, 'PRE')) {
+                    let codeContent = node.textContent.trim();
+                    if (options && options.inTableCell) {
+                        codeContent = codeContent.replace(/\|/g, '\\|');
+                    }
+                    return `\`${codeContent}\``;
+                }
+                return '';
+            case 'P':
+            case 'UL': case 'OL':
+            case 'BLOCKQUOTE':
+            case 'PRE':
+            case 'H1': case 'H2': case 'H3':
+            case 'HR':
+            case 'DIV':
+                if (options && options.inTableCell) {
+                    return this._nodeToHtmlForTableCell(node);
+                }
+                if (node.nodeName === 'P') {
+                    const pParent = node.parentNode;
+                    const isInsideListItemOrBlockquote = pParent && (pParent.nodeName === 'LI' || pParent.nodeName === 'BLOCKQUOTE');
+                    let pContent = this._processInlineContainerRecursive(node, options).trim();
+                    if (isInsideListItemOrBlockquote) {
+                        return pContent.replace(/\n\s*\n/g, '\n').trim() + (pContent ? '\n' : '');
+                    }
+                    return pContent ? `${pContent}\n\n` : '';
+                }
+                if (node.nodeName === 'UL' || node.nodeName === 'OL') {
+                    let listMd = this._listToMarkdownRecursive(node, "", node.nodeName, 1, options);
+                    if (listMd.trim().length > 0 && !listMd.endsWith('\n\n')) {
+                        if (!listMd.endsWith('\n')) listMd += '\n';
+                        listMd += '\n';
+                    }
+                    return listMd;
+                }
+                if (node.nodeName === 'BLOCKQUOTE') {
+                    const quoteContentRaw = this._processInlineContainerRecursive(node, options);
+                    const quoteLines = quoteContentRaw.split('\n').map(line => line.trim());
+                    const nonEmptyLines = quoteLines.filter(line => line.length > 0);
+                    return nonEmptyLines.map(line => `> ${line}`).join('\n') + '\n\n';
+                }
+                if (node.nodeName === 'PRE') {
+                    if (node.firstChild && node.firstChild.nodeName === 'CODE') {
+                        const codeElement = node.firstChild;
+                        const langMatch = codeElement.className.match(/language-(\S+)/);
+                        const lang = langMatch ? langMatch[1] : '';
+                        let preContent = codeElement.textContent;
+                        if (preContent.length > 0 && !preContent.endsWith('\n')) preContent += '\n';
+                        return `\`\`\`${lang}\n${preContent}\`\`\`\n\n`;
+                    }
+                    let preTextContent = node.textContent;
+                    if (preTextContent.length > 0 && !preTextContent.endsWith('\n')) preTextContent += '\n';
+                    return `\`\`\`\n${preTextContent}\`\`\`\n\n`;
+                }
+                if (node.nodeName.match(/^H[1-3]$/)) {
+                    return `${'#'.repeat(parseInt(node.nodeName[1]))} ${this._processInlineContainerRecursive(node, options).trim()}\n\n`;
+                }
+                if (node.nodeName === 'HR') {
+                    return '\n---\n\n';
+                }
+                if (node.nodeName === 'DIV') {
+                    const divContent = this._processInlineContainerRecursive(node, options).trim();
+                    if (node.classList.contains('md-editable-area')) return divContent;
+                    return divContent ? `${divContent}\n\n` : '';
+                }
+                break;
+
             case 'TABLE':
                 let tableMarkdown = '';
                 const tHeadNode = node.querySelector('thead');
@@ -1893,7 +1960,7 @@ class MarkdownWYSIWYG {
                     let fallbackContent = '';
                     Array.from(node.querySelectorAll('tr')).forEach(trNode => {
                         Array.from(trNode.querySelectorAll('th, td')).forEach(cellNode => {
-                            fallbackContent += this._cellContentToMarkdown(cellNode).replace(/<br>/g, '\n') + '\n\n';
+                            fallbackContent += this._nodeToMarkdownRecursive(cellNode, { ...options, inTableCell: false });
                         });
                     });
                     return fallbackContent.trim() ? fallbackContent.trim() + '\n\n' : '';
@@ -1914,15 +1981,23 @@ class MarkdownWYSIWYG {
                 });
                 tableMarkdown += bodyMdContent;
                 return tableMarkdown.trim() ? tableMarkdown.trim() + '\n\n' : '';
-            case 'DIV':
-                const divContent = this._processInlineContainerRecursive(node).trim();
-                if (node.classList.contains('md-editable-area')) return divContent;
-                return divContent ? `${divContent}\n\n` : '';
+            case 'LI':
+                return this._processInlineContainerRecursive(node, options).trim();
             default:
                 if (node.childNodes && node.childNodes.length > 0) {
-                    return this._processInlineContainerRecursive(node);
+                    return this._processInlineContainerRecursive(node, options);
                 }
-                return (node.textContent || '').replace(/  +/g, ' ');
+                let defaultText = (node.textContent || '');
+                if (!(options && options.inTableCell) && !this._findParentElement(node, 'PRE')) {
+                    defaultText = defaultText.replace(/  +/g, ' ');
+                }
+                if (options && options.inTableCell) {
+                    defaultText = defaultText.replace(/\|/g, '\\|');
+                    if (!this._findParentElement(node, 'PRE')) {
+                        defaultText = defaultText.replace(/\n/g, '<br>');
+                    }
+                }
+                return defaultText;
         }
     }
 

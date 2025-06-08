@@ -128,12 +128,10 @@ class MarkdownWYSIWYG {
             button.innerHTML = btnConfig.label;
             button.title = btnConfig.title;
             button.addEventListener('click', (e) => {
-                e.stopPropagation(); // Prevent editor click from hiding toolbar immediately
-                if (this.currentTableSelectionInfo) { // Ensure context is still valid
+                e.stopPropagation();
+                if (this.currentTableSelectionInfo) {
                     btnConfig.action();
                 }
-                // Optionally hide after action, or rely on next click
-                // this._hideContextualTableToolbar(); 
             });
             this.contextualTableToolbar.appendChild(button);
         });
@@ -149,18 +147,17 @@ class MarkdownWYSIWYG {
         const toolbarHeight = this.contextualTableToolbar.offsetHeight;
         const toolbarWidth = this.contextualTableToolbar.offsetWidth;
 
-        let top = cellRect.top - editorWrapperRect.top - toolbarHeight - 5; // 5px above
+        let top = cellRect.top - editorWrapperRect.top - toolbarHeight - 5;
         let left = cellRect.left - editorWrapperRect.left;
 
-        if (top < 0) { // If not enough space above, try below
-            top = cellRect.bottom - editorWrapperRect.top + 5; // 5px below
+        if (top < 0) {
+            top = cellRect.bottom - editorWrapperRect.top + 5;
         }
-        // Ensure it's within editor horizontal bounds
         if (left + toolbarWidth > editorWrapperRect.width) {
-            left = editorWrapperRect.width - toolbarWidth - 5; // Align to right edge
+            left = editorWrapperRect.width - toolbarWidth - 5;
         }
         if (left < 0) {
-            left = 5; // Align to left edge
+            left = 5;
         }
 
         this.contextualTableToolbar.style.top = `${top}px`;
@@ -182,12 +179,10 @@ class MarkdownWYSIWYG {
     _closeContextualTableToolbarOnClickOutside(event) {
         if (this.contextualTableToolbar &&
             !this.contextualTableToolbar.contains(event.target) &&
-            !this._findParentElement(event.target, ['TD', 'TH'])) { // Hide if click is outside toolbar AND not on another cell
+            !this._findParentElement(event.target, ['TD', 'TH'])) {
             this._hideContextualTableToolbar();
         } else if (this.contextualTableToolbar && this.contextualTableToolbar.contains(event.target)) {
-            // Click was on the toolbar itself, do nothing here (button handlers will act)
         } else {
-            // Click was on another cell, _handleEditableAreaClickForTable will manage repositioning or hiding
         }
     }
 
@@ -213,15 +208,14 @@ class MarkdownWYSIWYG {
                     cell: cell,
                     row: row,
                     table: table,
-                    cellIndex: cell.cellIndex, // Visual index
-                    rowIndex: row.rowIndex // Visual index
+                    cellIndex: cell.cellIndex,
+                    rowIndex: row.rowIndex
                 };
                 this._showContextualTableToolbar(cell);
             } else {
                 this._hideContextualTableToolbar();
             }
         } else if (!this.contextualTableToolbar.contains(target)) {
-            // Click was outside a cell and not on the toolbar itself
             this._hideContextualTableToolbar();
         }
     }
@@ -229,7 +223,7 @@ class MarkdownWYSIWYG {
     _insertRowWysiwyg(above) {
         if (!this.currentTableSelectionInfo) return;
         const { row: currentRow, table } = this.currentTableSelectionInfo;
-        const parentSection = currentRow.parentNode; // TBODY, THEAD, or TFOOT
+        const parentSection = currentRow.parentNode;
         if (!parentSection || !['TBODY', 'THEAD', 'TFOOT'].includes(parentSection.nodeName)) {
             console.warn("Could not find table section (tbody, thead, tfoot) for current row.");
             return;
@@ -239,8 +233,8 @@ class MarkdownWYSIWYG {
         let focusedCellIndex = this.currentTableSelectionInfo.cell.cellIndex;
 
         for (const c of currentRow.cells) {
-            const newCellNode = document.createElement(c.nodeName); // TD or TH
-            newCellNode.innerHTML = '&#8203;'; // Zero-width space for cursor
+            const newCellNode = document.createElement(c.nodeName);
+            newCellNode.innerHTML = '&#8203;';
             if (c.colSpan > 1) {
                 newCellNode.colSpan = c.colSpan;
             }
@@ -256,17 +250,15 @@ class MarkdownWYSIWYG {
         const cellToFocus = newRow.cells[focusedCellIndex] || newRow.cells[0];
         if (cellToFocus) {
             this._focusCell(cellToFocus);
-            // Update selection info to the new cell
             this.currentTableSelectionInfo.cell = cellToFocus;
             this.currentTableSelectionInfo.row = newRow;
             this.currentTableSelectionInfo.rowIndex = newRow.rowIndex;
-            // Cell index remains the same relative to the new row
         }
 
         this._pushToUndoStack(this.editableArea.innerHTML);
         if (this.options.onUpdate) this.options.onUpdate(this.getValue());
         this._updateWysiwygToolbarActiveStates();
-        this._showContextualTableToolbar(cellToFocus || newRow.cells[0]); // Reposition toolbar
+        this._showContextualTableToolbar(cellToFocus || newRow.cells[0]);
     }
 
     _insertColumnWysiwyg(left) {
@@ -277,8 +269,7 @@ class MarkdownWYSIWYG {
         const targetInsertVisualIndex = left ? clickedCellVisualIndex : clickedCellVisualIndex + 1;
         let newFocusedCellInCurrentRow = null;
 
-        for (const row of table.rows) { // Iterates over all rows (thead, tbody, tfoot)
-            // Determine cell type (TH for THEAD, TD otherwise)
+        for (const row of table.rows) {
             const cellType = (row.parentNode.nodeName === 'THEAD' || (row.cells[0] && row.cells[0].nodeName === 'TH')) ? 'th' : 'td';
 
             const newCell = document.createElement(cellType);
@@ -297,7 +288,6 @@ class MarkdownWYSIWYG {
 
         if (newFocusedCellInCurrentRow) {
             this._focusCell(newFocusedCellInCurrentRow);
-            // Update selection info to the new cell
             this.currentTableSelectionInfo.cell = newFocusedCellInCurrentRow;
             this.currentTableSelectionInfo.cellIndex = newFocusedCellInCurrentRow.cellIndex;
         }
@@ -305,7 +295,7 @@ class MarkdownWYSIWYG {
         this._pushToUndoStack(this.editableArea.innerHTML);
         if (this.options.onUpdate) this.options.onUpdate(this.getValue());
         this._updateWysiwygToolbarActiveStates();
-        this._showContextualTableToolbar(newFocusedCellInCurrentRow || currentCell); // Reposition toolbar
+        this._showContextualTableToolbar(newFocusedCellInCurrentRow || currentCell);
     }
 
     _focusCell(cellElement) {
@@ -314,17 +304,14 @@ class MarkdownWYSIWYG {
         const range = document.createRange();
         const sel = window.getSelection();
 
-        // Ensure cell has at least a ZWS for cursor placement
         if (!cellElement.firstChild || (cellElement.firstChild.nodeType === Node.TEXT_NODE && cellElement.firstChild.textContent === '')) {
             cellElement.innerHTML = '&#8203;';
         }
 
-        // Try to select the content or place cursor at the start
         if (cellElement.firstChild) {
-            // If it's ZWS, place cursor after it. Otherwise, at the start of content.
             const offset = (cellElement.firstChild.nodeType === Node.TEXT_NODE && cellElement.firstChild.textContent === '\u200B') ? 1 : 0;
             range.setStart(cellElement.firstChild, offset);
-        } else { // Should not happen if we ensure ZWS
+        } else {
             range.selectNodeContents(cellElement);
         }
         range.collapse(true);
@@ -515,7 +502,7 @@ class MarkdownWYSIWYG {
             const button = document.createElement('button');
             button.type = 'button';
             button.classList.add('md-toolbar-button', `md-toolbar-button-${buttonConfig.id}`);
-            button.innerHTML = buttonConfig.label; // SVGs are here
+            button.innerHTML = buttonConfig.label;
             button.title = buttonConfig.title;
             button.dataset.buttonId = buttonConfig.id;
             const listener = () => this._handleToolbarClick(buttonConfig, button);
@@ -557,7 +544,7 @@ class MarkdownWYSIWYG {
     switchToMode(mode, isInitialSetup = false) {
         if (this.currentMode === mode && !isInitialSetup) return;
         this._hideTableGridSelector();
-        this._hideContextualTableToolbar(); // Hide contextual table toolbar on mode switch
+        this._hideContextualTableToolbar();
         const previousContent = this.currentMode === 'wysiwyg' ? this.editableArea.innerHTML : this.markdownArea.value;
         this.currentMode = mode;
         if (mode === 'wysiwyg') {
@@ -597,8 +584,6 @@ class MarkdownWYSIWYG {
     }
     _handleSelectionChange() {
         this._updateToolbarActiveStates();
-        // Contextual table toolbar is handled by its own click listener, not selection change
-        // to avoid it appearing/disappearing too erratically during text selection.
     }
     _clearToolbarActiveStates() {
         this.options.buttons.forEach(btnConfig => {
@@ -630,10 +615,6 @@ class MarkdownWYSIWYG {
                     while (blockElement && blockElement !== this.editableArea) {
                         if (blockElement.nodeName === btnConfig.value.toUpperCase()) {
                             isActive = true;
-                            break;
-                        }
-                        if (['H1', 'H2', 'H3', 'P', 'BLOCKQUOTE', 'LI', 'PRE', 'TABLE'].includes(blockElement.nodeName) &&
-                            blockElement.nodeName !== btnConfig.value.toUpperCase()) {
                             break;
                         }
                         blockElement = blockElement.parentNode;
@@ -885,8 +866,8 @@ class MarkdownWYSIWYG {
         this.editableArea.addEventListener('input', this._boundListeners.onEditableAreaInput);
         this.editableArea.addEventListener('keydown', this._boundListeners.onEditableAreaKeyDown);
         this.editableArea.addEventListener('keyup', this._boundListeners.updateWysiwygToolbar);
-        this.editableArea.addEventListener('click', this._boundListeners.updateWysiwygToolbar); // General toolbar updates
-        this.editableArea.addEventListener('click', this._boundListeners.onEditableAreaClickForTable); // Table context
+        this.editableArea.addEventListener('click', this._boundListeners.updateWysiwygToolbar);
+        this.editableArea.addEventListener('click', this._boundListeners.onEditableAreaClickForTable);
         this.editableArea.addEventListener('focus', this._boundListeners.updateWysiwygToolbar);
         this.markdownArea.addEventListener('input', this._boundListeners.onMarkdownAreaInput);
         this.markdownArea.addEventListener('keydown', this._boundListeners.onMarkdownAreaKeyDown);
@@ -912,8 +893,7 @@ class MarkdownWYSIWYG {
                             let nextIndex = currentIndex + (e.shiftKey ? -1 : 1);
                             if (nextIndex >= 0 && nextIndex < cells.length) {
                                 const nextCell = cells[nextIndex];
-                                this._focusCell(nextCell); // Use helper to focus
-                                // Update contextual toolbar position
+                                this._focusCell(nextCell);
                                 const row = this._findParentElement(nextCell, 'TR');
                                 this.currentTableSelectionInfo = { cell: nextCell, row: row, table: table, cellIndex: nextCell.cellIndex, rowIndex: row.rowIndex };
                                 this._showContextualTableToolbar(nextCell);
@@ -1022,11 +1002,11 @@ class MarkdownWYSIWYG {
                 const lastChild = this.editableArea.lastChild;
                 if (lastChild.nodeType === Node.TEXT_NODE) {
                     range.setStart(lastChild, lastChild.length);
-                } else { // Try to go into the last element
+                } else {
                     range.selectNodeContents(lastChild);
                 }
-                range.collapse(false); // Collapse to the end
-            } else { // Editor is empty
+                range.collapse(false);
+            } else {
                 range.setStart(this.editableArea, 0);
                 range.collapse(true);
             }
@@ -1151,11 +1131,10 @@ class MarkdownWYSIWYG {
 
         if (firstCellToFocus) {
             this._focusCell(firstCellToFocus);
-            // After focusing, update currentTableSelectionInfo and show contextual toolbar
             const row = this._findParentElement(firstCellToFocus, 'TR');
             this.currentTableSelectionInfo = { cell: firstCellToFocus, row: row, table: table, cellIndex: firstCellToFocus.cellIndex, rowIndex: row.rowIndex };
             this._showContextualTableToolbar(firstCellToFocus);
-        } else { // Fallback to paragraph after if table is somehow empty
+        } else {
             rangeToUse.setStart(pAfter, pAfter.childNodes.length > 0 ? 1 : 0);
             rangeToUse.collapse(true);
             selection.removeAllRanges();
@@ -1938,7 +1917,7 @@ class MarkdownWYSIWYG {
             this.tableGridSelector.parentNode.removeChild(this.tableGridSelector);
             this.tableGridSelector = null;
         }
-        this._hideContextualTableToolbar(); // Hide and prepare for removal
+        this._hideContextualTableToolbar();
         if (this.contextualTableToolbar && this.contextualTableToolbar.parentNode) {
             this.contextualTableToolbar.parentNode.removeChild(this.contextualTableToolbar);
             this.contextualTableToolbar = null;
@@ -1949,7 +1928,6 @@ class MarkdownWYSIWYG {
         if (this._boundListeners.handleSelectionChange) {
             document.removeEventListener('selectionchange', this._boundListeners.handleSelectionChange);
         }
-        // Listeners for contextualTableToolbar (click outside, esc) are removed by _hideContextualTableToolbar
 
         if (this.toolbarButtonListeners) {
             this.toolbarButtonListeners.forEach(({ button, listener }) => {

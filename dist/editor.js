@@ -12,6 +12,7 @@ const ICON_HR = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stro
 const ICON_TABLE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>`;
 const ICON_CODEBLOCK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16,18 22,12 16,6"/><polyline points="8,6 2,12 8,18"/></svg>`;
 const ICON_INLINECODE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10.75 4.75L9 19.25"/><path d="M15.25 4.75L13.5 19.25"/><path d="M19.25 7.5L22 10.5L19.25 13.5"/><path d="M4.75 7.5L2 10.5L4.75 13.5"/></svg>`;
+const ICON_IMAGE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`;
 const ICON_TABLE_INSERT_ROW_ABOVE = `<svg viewBox="0 0 24 24" fill="none"><g fill="#4a90e2"><rect x="3" y="10" width="5" height="3" rx=".5"/><rect x="9" y="10" width="5" height="3" rx=".5"/><rect x="15" y="10" width="5" height="3" rx=".5"/></g><g fill="#999"><rect x="3" y="15" width="5" height="3" rx=".5"/><rect x="9" y="15" width="5" height="3" rx=".5"/><rect x="15" y="15" width="5" height="3" rx=".5"/></g><path stroke="#4a90e2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 8V4M10 5l2-2 2 2"/></svg>`;
 const ICON_TABLE_INSERT_ROW_BELOW = `<svg viewBox="0 0 24 24" fill="none"><g fill="#999"><rect x="3" y="6" width="5" height="3" rx=".5"/><rect x="9" y="6" width="5" height="3" rx=".5"/><rect x="15" y="6" width="5" height="3" rx=".5"/></g><g fill="#4a90e2"><rect x="3" y="11" width="5" height="3" rx=".5"/><rect x="9" y="11" width="5" height="3" rx=".5"/><rect x="15" y="11" width="5" height="3" rx=".5"/></g><path stroke="#4a90e2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 16v4M10 19l2 2 2-2"/></svg>`;
 const ICON_TABLE_INSERT_COL_LEFT = `<svg viewBox="0 0 24 24" fill="none"><g fill="#4a90e2"><rect x="9" y="6" width="3" height="4" rx=".5"/><rect x="9" y="11" width="3" height="4" rx=".5"/><rect x="9" y="16" width="3" height="4" rx=".5"/></g><g fill="#999"><rect x="14" y="6" width="3" height="4" rx=".5"/><rect x="14" y="11" width="3" height="4" rx=".5"/><rect x="14" y="16" width="3" height="4" rx=".5"/></g><path stroke="#4a90e2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M7 12H3M4 10l-2 2 2 2"/></svg>`;
@@ -40,6 +41,7 @@ class MarkdownWYSIWYG {
                 { id: 'indent', label: ICON_INDENT, title: 'Aumentar Recuo', action: '_handleIndent', type: 'list-format' },
                 { id: 'blockquote', label: ICON_BLOCKQUOTE, title: 'Citação', execCommand: 'formatBlock', value: 'BLOCKQUOTE', type: 'block', mdPrefix: '> ' },
                 { id: 'hr', label: ICON_HR, title: 'Linha Horizontal', action: '_insertHorizontalRuleAction', type: 'block-insert' },
+                { id: 'image', label: ICON_IMAGE, title: 'Inserir Imagem', action: '_insertImageAction', type: 'block-insert' },
                 { id: 'table', label: ICON_TABLE, title: 'Inserir Tabela', action: '_insertTableAction', type: 'block-insert' },
                 { id: 'codeblock', label: ICON_CODEBLOCK, title: 'Bloco de Código', action: '_insertCodeBlock', type: 'block-wrap', mdPrefix: '```\n', mdSuffix: '\n```' },
                 { id: 'inlinecode', label: ICON_INLINECODE, title: 'Código em Linha', action: '_insertInlineCode', type: 'inline', mdPrefix: '`', mdSuffix: '`' }
@@ -61,6 +63,10 @@ class MarkdownWYSIWYG {
 
         this.contextualTableToolbar = null;
         this.currentTableSelectionInfo = null;
+
+        this.imageDialog = null;
+        this.imageUrlInput = null;
+        this.imageAltInput = null;
 
         this._init();
     }
@@ -89,6 +95,7 @@ class MarkdownWYSIWYG {
         this._createTabs();
         this._createTableGridSelector();
         this._createContextualTableToolbar();
+        this._createImageDialog();
 
         this.switchToMode(this.currentMode, true);
         this.setValue(this.options.initialValue || '', true);
@@ -97,11 +104,223 @@ class MarkdownWYSIWYG {
             this._pushToUndoStack(this.editableArea.innerHTML);
         } else {
             this._pushToUndoStack(this.markdownArea.value);
-            this._updateMarkdownLineNumbers(); 
+            this._updateMarkdownLineNumbers();
         }
         this._updateToolbarActiveStates();
         document.addEventListener('selectionchange', this._boundListeners.handleSelectionChange);
     }
+
+    _createImageDialog() {
+        this.imageDialog = document.createElement('dialog');
+        this.imageDialog.classList.add('md-image-dialog'); // Use class for styling
+
+        const form = document.createElement('form');
+        form.method = 'dialog';
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const url = this.imageUrlInput.value.trim();
+            const alt = this.imageAltInput.value.trim();
+            if (url) {
+                this._performInsertImage(url, alt || '');
+                this.imageDialog.close();
+            } else {
+                this.imageUrlInput.focus();
+                // Consider adding a visual error indication via CSS or a small message
+            }
+        });
+
+        const heading = document.createElement('h3');
+        heading.textContent = 'Inserir Imagem';
+        heading.classList.add('md-image-dialog-heading');
+        form.appendChild(heading);
+
+        const urlLabel = document.createElement('label');
+        urlLabel.htmlFor = 'md-image-url-input-' + this.editorWrapper.id; // Unique ID if multiple editors
+        urlLabel.textContent = 'URL da Imagem:';
+        urlLabel.classList.add('md-image-dialog-label');
+        form.appendChild(urlLabel);
+
+        this.imageUrlInput = document.createElement('input');
+        this.imageUrlInput.type = 'url';
+        this.imageUrlInput.id = 'md-image-url-input-' + this.editorWrapper.id;
+        this.imageUrlInput.required = true;
+        this.imageUrlInput.classList.add('md-image-dialog-input');
+        form.appendChild(this.imageUrlInput);
+
+        const altLabel = document.createElement('label');
+        altLabel.htmlFor = 'md-image-alt-input-' + this.editorWrapper.id;
+        altLabel.textContent = 'Texto Alternativo (Alt):';
+        altLabel.classList.add('md-image-dialog-label');
+        form.appendChild(altLabel);
+
+        this.imageAltInput = document.createElement('input');
+        this.imageAltInput.type = 'text';
+        this.imageAltInput.id = 'md-image-alt-input-' + this.editorWrapper.id;
+        this.imageAltInput.classList.add('md-image-dialog-input');
+        form.appendChild(this.imageAltInput);
+
+        const footer = document.createElement('footer');
+        footer.classList.add('md-image-dialog-footer');
+
+        const cancelButton = document.createElement('button');
+        cancelButton.type = 'button';
+        cancelButton.textContent = 'Cancelar';
+        cancelButton.classList.add('md-image-dialog-button');
+        cancelButton.addEventListener('click', () => {
+            this.imageDialog.close();
+        });
+        footer.appendChild(cancelButton);
+
+        const insertButton = document.createElement('button');
+        insertButton.type = 'submit';
+        insertButton.textContent = 'Inserir';
+        insertButton.classList.add('md-image-dialog-button', 'md-image-dialog-button-primary');
+        footer.appendChild(insertButton);
+
+        form.appendChild(footer);
+        this.imageDialog.appendChild(form);
+        this.editorWrapper.appendChild(this.imageDialog);
+
+        this.imageDialog.addEventListener('close', () => {
+            this.imageUrlInput.value = '';
+            this.imageAltInput.value = '';
+            // this.savedRangeInfo is handled by the insert/cancel logic
+        });
+    }
+
+
+    _insertImageAction() {
+        if (this.currentMode === 'wysiwyg') {
+            this.editableArea.focus();
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                this.savedRangeInfo = selection.getRangeAt(0).cloneRange();
+            } else {
+                const range = document.createRange();
+                range.selectNodeContents(this.editableArea);
+                range.collapse(false);
+                this.savedRangeInfo = range;
+            }
+        } else {
+            this.markdownArea.focus();
+            this.savedRangeInfo = {
+                start: this.markdownArea.selectionStart,
+                end: this.markdownArea.selectionEnd
+            };
+        }
+        this.imageDialog.showModal();
+        this.imageUrlInput.focus();
+    }
+
+    _performInsertImage(url, alt) {
+        if (this.currentMode === 'wysiwyg') {
+            this.editableArea.focus();
+            let range;
+            const selection = window.getSelection();
+
+            if (this.savedRangeInfo instanceof Range && this.editableArea.contains(this.savedRangeInfo.commonAncestorContainer)) {
+                range = this.savedRangeInfo;
+                selection.removeAllRanges();
+                selection.addRange(range);
+            } else {
+                if (selection.rangeCount > 0 && this.editableArea.contains(selection.getRangeAt(0).commonAncestorContainer)) {
+                    range = selection.getRangeAt(0);
+                } else {
+                    range = document.createRange();
+                    range.selectNodeContents(this.editableArea);
+                    range.collapse(false);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }
+            }
+
+            const img = document.createElement('img');
+            img.src = url;
+            img.alt = alt;
+            // img.style.maxWidth = '100%'; // Optional: for responsive images
+
+            range.deleteContents();
+
+            const fragment = document.createDocumentFragment();
+            fragment.appendChild(img);
+
+            const pAfter = document.createElement('p');
+            pAfter.innerHTML = '&#8203;';
+            fragment.appendChild(pAfter);
+
+            range.insertNode(fragment);
+
+            range.setStart(pAfter, 1);
+            range.collapse(true);
+            selection.removeAllRanges();
+            selection.addRange(range);
+
+            this._finalizeUpdate(this.editableArea.innerHTML);
+
+        } else { // Markdown mode
+            this.markdownArea.focus();
+            let start, end;
+
+            if (this.savedRangeInfo && typeof this.savedRangeInfo.start === 'number') {
+                start = this.savedRangeInfo.start;
+                end = this.savedRangeInfo.end;
+            } else {
+                start = this.markdownArea.selectionStart;
+                end = this.markdownArea.selectionEnd;
+            }
+
+            const markdownImage = `![${alt}](${url})`;
+            const textValue = this.markdownArea.value;
+
+            let prefix = "";
+            let suffix = "\n"; // Default to a single newline after the image
+
+            // Determine if a newline is needed before the image
+            if (start > 0 && textValue[start - 1] !== '\n') {
+                prefix = "\n"; // Add one newline if not at the start of a line
+                // If the line before that also wasn't a newline, make it a double newline for block separation
+                if (start > 1 && textValue[start - 2] !== '\n') {
+                    prefix = "\n\n";
+                }
+            } else if (start > 0 && textValue[start - 1] === '\n') { // Already at the start of a new line
+                 if (start > 1 && textValue[start - 2] !== '\n') { // But the previous line had content
+                    prefix = "\n"; // Add one more newline to make it \n\n
+                 }
+                 // If textValue[start-2] was also '\n', prefix remains "" (already have \n\n)
+            }
+
+
+            // Determine if newlines are needed after the image
+            if (end < textValue.length && textValue[end] !== '\n') {
+                suffix = "\n\n"; // Content directly after on same line, needs two newlines
+            } else if (end < textValue.length && textValue[end] === '\n') {
+                // There's one newline after. Check if there's another.
+                if (end + 1 < textValue.length && textValue[end + 1] !== '\n') {
+                    suffix = "\n"; // Only one newline exists, add another to make it \n\n
+                } else {
+                    suffix = ""; // Two newlines (or end of doc) already exist, no need to add more
+                }
+            } else { // At the very end of the document
+                suffix = "\n"; // Ensure at least one newline if it's the last thing
+            }
+
+
+            const textToInsert = prefix + markdownImage + suffix;
+            const textBeforeSelection = textValue.substring(0, start);
+            const textAfterSelection = textValue.substring(end);
+
+            this.markdownArea.value = textBeforeSelection + textToInsert + textAfterSelection;
+
+            // Position cursor after the inserted markdown image, before the final suffix newlines
+            let newCursorPos = start + prefix.length + markdownImage.length;
+
+
+            this.markdownArea.setSelectionRange(newCursorPos, newCursorPos);
+            this._finalizeUpdate(this.markdownArea.value);
+        }
+        this.savedRangeInfo = null;
+    }
+
 
     _createContextualTableToolbar() {
         this.contextualTableToolbar = document.createElement('div');
@@ -524,11 +743,11 @@ class MarkdownWYSIWYG {
         this.markdownArea = document.createElement('textarea');
         this.markdownArea.classList.add('md-markdown-area');
         this.markdownArea.setAttribute('spellcheck', 'false');
-        
+
         this.markdownTextareaWrapper.appendChild(this.markdownArea);
         this.markdownEditorContainer.appendChild(this.markdownLineNumbersDiv);
         this.markdownEditorContainer.appendChild(this.markdownTextareaWrapper);
-        
+
         this.contentAreaContainer.appendChild(this.markdownEditorContainer);
         this.editorWrapper.appendChild(this.contentAreaContainer);
     }
@@ -595,12 +814,12 @@ class MarkdownWYSIWYG {
 
         const lines = this.markdownArea.value.split('\n');
         let lineCount = lines.length;
-        
+
         let lineNumbersHtml = '';
         for (let i = 1; i <= lineCount; i++) {
             lineNumbersHtml += `<div>${i}</div>`;
         }
-        this.markdownLineNumbersDiv.innerHTML = lineNumbersHtml || '<div>1</div>'; 
+        this.markdownLineNumbersDiv.innerHTML = lineNumbersHtml || '<div>1</div>';
         this._syncScrollMarkdown();
     }
 
@@ -643,7 +862,7 @@ class MarkdownWYSIWYG {
 
         this.options.buttons.forEach(btnConfig => {
             const buttonEl = this.toolbar.querySelector(`.md-toolbar-button-${btnConfig.id}`);
-            if (!buttonEl || btnConfig.id === 'table') return;
+            if (!buttonEl || btnConfig.id === 'table' || btnConfig.id === 'image') return; // Exclude table & image from active state check for now
 
             let isActive = false;
 
@@ -734,7 +953,7 @@ class MarkdownWYSIWYG {
         if (outdentButton) outdentButton.disabled = true;
 
         this.options.buttons.forEach(btnConfig => {
-            if (btnConfig.id === 'table') return;
+            if (btnConfig.id === 'table' || btnConfig.id === 'image') return; // Exclude table & image from active state check
 
             const buttonEl = this.toolbar.querySelector(`.md-toolbar-button-${btnConfig.id}`);
             if (!buttonEl) return;
@@ -922,7 +1141,7 @@ class MarkdownWYSIWYG {
 
     _attachEventListeners() {
         this._boundListeners.onEditableAreaInput = (e) => this._onAreaInput(e, () => this.editableArea.innerHTML, this._boundListeners.updateWysiwygToolbar);
-        
+
         this._boundListeners.onMarkdownAreaInput = (e) => {
             this._onAreaInput(e, () => this.markdownArea.value, this._boundListeners.updateMarkdownToolbar);
             this._updateMarkdownLineNumbers();
@@ -1095,10 +1314,10 @@ class MarkdownWYSIWYG {
     }
 
     _handleToolbarClick(buttonConfig, buttonElement) {
-        if (buttonConfig.id === 'table') {
+        if (buttonConfig.id === 'table' || buttonConfig.id === 'image') { // Added 'image'
             if (typeof this[buttonConfig.action] === 'function') {
-                if (this.currentMode === 'wysiwyg') this.editableArea.focus();
-                else this.markdownArea.focus();
+                // Focus is handled inside the action (_insertImageAction, _insertTableAction)
+                // before showing the popup/grid, to save the correct range.
                 this[buttonConfig.action](buttonElement);
             }
             return;
@@ -1120,16 +1339,15 @@ class MarkdownWYSIWYG {
                 this._applyMarkdownFormatting(buttonConfig);
             }
         }
-        if (buttonConfig.execCommand || buttonConfig.action) {
-        } else {
-            this._updateToolbarActiveStates();
-        }
+        this._updateToolbarActiveStates();
     }
 
     _insertTableAction(buttonElement) {
         if (this.tableGridSelector.style.display === 'block') {
             this._hideTableGridSelector();
         } else {
+            if (this.currentMode === 'wysiwyg') this.editableArea.focus();
+            else this.markdownArea.focus();
             this._showTableGridSelector(buttonElement);
         }
     }
@@ -1151,9 +1369,8 @@ class MarkdownWYSIWYG {
         let rangeToUse;
         const selection = window.getSelection();
 
-        if (this.savedRangeInfo instanceof Range) {
+        if (this.savedRangeInfo instanceof Range && this.editableArea.contains(this.savedRangeInfo.commonAncestorContainer)) {
             rangeToUse = this.savedRangeInfo;
-            this.savedRangeInfo = null;
             selection.removeAllRanges();
             selection.addRange(rangeToUse);
         } else if (selection.rangeCount > 0 && this.editableArea.contains(selection.getRangeAt(0).commonAncestorContainer)) {
@@ -1220,7 +1437,7 @@ class MarkdownWYSIWYG {
             selection.removeAllRanges();
             selection.addRange(rangeToUse);
         }
-
+        this.savedRangeInfo = null;
         this._finalizeUpdate(this.editableArea.innerHTML);
     }
 
@@ -1235,7 +1452,6 @@ class MarkdownWYSIWYG {
         if (this.savedRangeInfo && typeof this.savedRangeInfo.start === 'number') {
             start = this.savedRangeInfo.start;
             end = this.savedRangeInfo.end;
-            this.savedRangeInfo = null;
         } else {
             start = textarea.selectionStart;
             end = textarea.selectionEnd;
@@ -1289,6 +1505,7 @@ class MarkdownWYSIWYG {
         } else {
             textarea.selectionStart = textarea.selectionEnd = start + textToInsert.length;
         }
+        this.savedRangeInfo = null;
         textarea.focus();
         this._finalizeUpdate(textarea.value);
     }
@@ -1619,7 +1836,7 @@ class MarkdownWYSIWYG {
             }
             const replacementText = prefixNewline + "---\n\n";
             textarea.value = textarea.value.substring(0, start) + replacementText + textarea.value.substring(textarea.selectionEnd);
-            const newCursorPos = start + replacementText.length - 1;
+            const newCursorPos = start + replacementText.length - 1; // Before the last \n of \n\n
             textarea.selectionStart = textarea.selectionEnd = newCursorPos;
             this._finalizeUpdate(textarea.value);
         }
@@ -1675,13 +1892,13 @@ class MarkdownWYSIWYG {
                 const range = selection.getRangeAt(0);
                 range.deleteContents();
                 range.insertNode(code);
-                const spaceNode = document.createTextNode('\u200B');
+                const spaceNode = document.createTextNode('\u200B'); // ZWS
                 range.setStartAfter(code);
                 range.insertNode(spaceNode);
 
                 const newRange = document.createRange();
                 if (initialSelectedText.length > 0) {
-                    newRange.setStart(spaceNode, 1);
+                    newRange.setStart(spaceNode, 1); // After ZWS
                     newRange.collapse(true);
                 } else {
                     newRange.selectNodeContents(code);
@@ -1701,11 +1918,34 @@ class MarkdownWYSIWYG {
 
     _markdownToHtml(markdown) {
         if (typeof marked === 'undefined') {
-            return markdown.replace(/\n/g, '<br>');
+            // Basic fallback if marked.js is not available
+            let html = markdown
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+            // Very simplified Markdown to HTML for critical elements
+            html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/~~(.*?)~~/g, '<s>$1</s>')
+                .replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1">')
+                .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>')
+                .replace(/`(.*?)`/g, '<code>$1</code>')
+                .replace(/^\s*[-*+] (.*)/gim, '<ul><li>$1</li></ul>') // very basic list
+                .replace(/^\s*\d+\. (.*)/gim, '<ol><li>$1</li></ol>') // very basic list
+                .replace(/^> (.*)/gim, '<blockquote>$1</blockquote>')
+                .replace(/\n/g, '<br>');
+            // Consolidate adjacent lists (very naive)
+            html = html.replace(/<\/ul>\s*<ul>/gi, '').replace(/<\/ol>\s*<ol>/gi, '');
+            return html;
         }
         const markedOptions = {
             gfm: true,
-            breaks: false,
+            breaks: false, // Standard GFM behavior is false
             smartLists: true,
         };
         return marked.parse(markdown || '', markedOptions);
@@ -1719,7 +1959,7 @@ class MarkdownWYSIWYG {
         } else {
             tempDiv = elementOrHtml.cloneNode(true);
         }
-        tempDiv.innerHTML = tempDiv.innerHTML.replace(/\u200B/g, '');
+        tempDiv.innerHTML = tempDiv.innerHTML.replace(/\u200B/g, ''); // Remove zero-width spaces
 
         let markdown = '';
         this._normalizeNodes(tempDiv);
@@ -1727,8 +1967,8 @@ class MarkdownWYSIWYG {
         Array.from(tempDiv.childNodes).forEach(child => {
             markdown += this._nodeToMarkdownRecursive(child);
         });
-        markdown = markdown.replace(/\n\s*\n\s*\n+/g, '\n\n');
-        markdown = markdown.replace(/ +\n/g, '\n');
+        markdown = markdown.replace(/\n\s*\n\s*\n+/g, '\n\n'); // Collapse multiple blank lines
+        markdown = markdown.replace(/ +\n/g, '\n'); // Trim trailing spaces from lines
         return markdown.trim();
     }
 
@@ -1736,32 +1976,39 @@ class MarkdownWYSIWYG {
         let currentNode = parentElement.firstChild;
         while (currentNode) {
             let nextNode = currentNode.nextSibling;
+            // Merge adjacent text nodes
             if (currentNode.nodeType === Node.TEXT_NODE && nextNode && nextNode.nodeType === Node.TEXT_NODE) {
                 currentNode.textContent += nextNode.textContent;
                 parentElement.removeChild(nextNode);
-                nextNode = currentNode.nextSibling;
+                nextNode = currentNode.nextSibling; // Current node stays, re-evaluate with new next
             }
+            // BR handling
             else if (currentNode.nodeName === 'BR') {
+                // If BR is followed by nothing, another BR, or a block element, it's a "hard" line break, meaning newline.
+                // If followed by inline content, it might imply a newline for that content.
                 if (!nextNode || nextNode.nodeName === 'BR' || this._isBlockElement(nextNode)) {
                     const textNode = document.createTextNode('\n');
                     parentElement.insertBefore(textNode, currentNode);
                 } else if (nextNode.nodeType === Node.TEXT_NODE && !nextNode.textContent.startsWith('\n')) {
+                    // Prepend newline to the following text node if it doesn't already start with one
                     nextNode.textContent = '\n' + nextNode.textContent;
                 }
                 parentElement.removeChild(currentNode);
-                currentNode = nextNode;
-                continue;
+                currentNode = nextNode; // Current node is removed, move to the (original) next
+                continue; // Skip recursion for removed BR, and re-loop from current
             }
+
+            // Recurse for element nodes
             if (currentNode.childNodes && currentNode.childNodes.length > 0 && currentNode.nodeType === Node.ELEMENT_NODE) {
                 this._normalizeNodes(currentNode);
             }
-            currentNode = nextNode;
+            currentNode = nextNode; // Move to the next sibling
         }
     }
 
     _isBlockElement(node) {
         if (!node || node.nodeType !== Node.ELEMENT_NODE) return false;
-        const blockElements = ['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'UL', 'OL', 'LI', 'BLOCKQUOTE', 'PRE', 'HR', 'TABLE', 'THEAD', 'TBODY', 'TR', 'DIV'];
+        const blockElements = ['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'UL', 'OL', 'LI', 'BLOCKQUOTE', 'PRE', 'HR', 'TABLE', 'THEAD', 'TBODY', 'TR', 'DIV', 'IMG']; // Added IMG
         return blockElements.includes(node.nodeName);
     }
 
@@ -1786,6 +2033,7 @@ class MarkdownWYSIWYG {
                 Array.from(li.childNodes).forEach(childNode => {
                     if (childNode.nodeName === 'UL' || childNode.nodeName === 'OL') {
                         hasNestedList = true;
+                        // Ensure a newline before nested list if there was preceding content in the LI
                         if (listItemContent.trim().length > 0 && !listItemContent.endsWith('\n')) {
                             listItemContent += '\n';
                         }
@@ -1794,20 +2042,23 @@ class MarkdownWYSIWYG {
                         listItemContent += this._nodeToMarkdownRecursive(childNode, options);
                     }
                 });
-                const lines = listItemContent.trim().split('\n');
-                let firstLine = lines.shift() || "";
-                let processedContent = firstLine.trimEnd();
 
+                // Process the content of the LI, handling multiple lines
+                const lines = listItemContent.trim().split('\n');
+                let firstLine = lines.shift() || ""; // Get the first line of content
+                let processedContent = firstLine.trimEnd(); // Trim trailing spaces from the first line
+
+                // If there are subsequent lines (e.g. from <p> inside <li> or multiple blocks)
                 if (lines.length > 0) {
                     lines.forEach(line => {
-                        if (line.trim().length > 0) {
-                            processedContent += '\n' + indent + '  ' + line.trimStart();
-                        } else if (processedContent.length > 0 || hasNestedList) {
+                        if (line.trim().length > 0) { // Only add non-empty lines
+                            processedContent += '\n' + indent + '  ' + line.trimStart(); // Indent subsequent lines
+                        } else if (processedContent.length > 0 || hasNestedList) { // Add empty line if needed for structure
                             processedContent += '\n' + indent + '  ';
                         }
                     });
                 }
-                markdown += `${indent}${itemMarker}${processedContent.trimEnd()}\n`;
+                markdown += `${indent}${itemMarker}${processedContent.trimEnd()}\n`; // Ensure no trailing space on the item line
                 if (isOrdered) listCounter++;
             }
         });
@@ -1819,18 +2070,23 @@ class MarkdownWYSIWYG {
         Array.from(cellNode.childNodes).forEach(child => {
             markdown += this._nodeToMarkdownRecursive(child, { inTableCell: true });
         });
-        return markdown.trim();
+        return markdown.trim().replace(/<br\s*\/?>/gi, ' '); // Replace <br> with space for single line cells
     }
 
-    _nodeToHtmlForTableCell(node) {
+
+    _nodeToHtmlForTableCell(node) { // Used to prepare complex node content for _cellContentToMarkdown
         const clone = node.cloneNode(true);
 
+        // Escape pipes in text nodes that are not in <pre> or <code>
         const textWalker = document.createTreeWalker(clone, NodeFilter.SHOW_TEXT, null, false);
         let currentTextNode;
         while (currentTextNode = textWalker.nextNode()) {
-            currentTextNode.textContent = currentTextNode.textContent.replace(/\|/g, '\\|');
+            if (!this._findParentElement(currentTextNode, ['PRE', 'CODE'])) {
+                 currentTextNode.textContent = currentTextNode.textContent.replace(/\|/g, '\\|');
+            }
         }
 
+        // Convert newlines in text nodes (not in pre/code) to <br> for multi-line cell content
         const textNodesToProcess = [];
         const preCodeElements = Array.from(clone.querySelectorAll('pre, code'));
 
@@ -1850,12 +2106,13 @@ class MarkdownWYSIWYG {
 
         Array.from(clone.childNodes).forEach(collectTextNodes);
 
+        // Process text nodes in reverse to avoid issues with node list changes
         for (let i = textNodesToProcess.length - 1; i >= 0; i--) {
             const tn = textNodesToProcess[i];
             if (tn.parentNode && tn.textContent.includes('\n')) {
                 const fragments = tn.textContent.split('\n');
                 const parent = tn.parentNode;
-                if (parent) {
+                if(parent){
                     fragments.forEach((fragment, idx) => {
                         if (fragment.length > 0) parent.insertBefore(document.createTextNode(fragment), tn);
                         if (idx < fragments.length - 1) parent.insertBefore(document.createElement('br'), tn);
@@ -1864,31 +2121,42 @@ class MarkdownWYSIWYG {
                 }
             }
         }
-        
+
+        // Serialize the modified clone to HTML string
         const tempSerializer = document.createElement('div');
         tempSerializer.appendChild(clone);
-        return tempSerializer.innerHTML;
+        return tempSerializer.innerHTML; // This HTML will then be converted to MD by _cellContentToMarkdown
     }
+
 
     _nodeToMarkdownRecursive(node, options = {}) {
         switch (node.nodeName) {
             case '#text':
                 let text = node.textContent;
-                if (!(options && options.inTableCell) && !this._findParentElement(node, 'PRE')) {
-                    text = text.replace(/  +/g, ' ');
+                // Avoid collapsing spaces in pre/code or if it's already a single space from normalization
+                if (!(options && options.inTableCell) && !this._findParentElement(node, 'PRE') && !this._findParentElement(node, 'CODE')) {
+                    text = text.replace(/  +/g, ' '); // Collapse multiple spaces to one
                 }
                 if (options && options.inTableCell) {
-                    text = text.replace(/\|/g, '\\|');
-                    if (!this._findParentElement(node, 'PRE')) {
-                        text = text.replace(/\n/g, '<br>');
+                    text = text.replace(/\|/g, '\\|'); // Escape pipes in table cells
+                    if (!this._findParentElement(node, 'PRE') && !this._findParentElement(node, 'CODE')) { // Don't convert newlines in pre/code to <br>
+                        text = text.replace(/\n/g, '<br>'); // Convert newlines to <br> for multi-line cells
                     }
                 }
                 return text;
             case 'BR':
                 if (options && options.inTableCell) {
-                    return '<br>';
+                    return '<br>'; // Keep <br> for multi-line table cells
                 }
-                return '\n';
+                return '\n'; // Standard newline
+            case 'IMG': // Added IMG handling
+                if (options && options.inTableCell) { // Represent as HTML for complex cells
+                    return node.outerHTML;
+                }
+                const imgSrc = node.getAttribute('src') || '';
+                const imgAlt = node.getAttribute('alt') || '';
+                return `![${imgAlt}](${imgSrc})\n\n`; // Image as a block with newlines
+
             case 'B': case 'STRONG': return `**${this._processInlineContainerRecursive(node, options).trim()}**`;
             case 'I': case 'EM': return `*${this._processInlineContainerRecursive(node, options).trim()}*`;
             case 'S': case 'DEL': case 'STRIKE': return `~~${this._processInlineContainerRecursive(node, options).trim()}~~`;
@@ -1897,56 +2165,66 @@ class MarkdownWYSIWYG {
                 const linkText = this._processInlineContainerRecursive(node, options).trim();
                 return `[${linkText}](${href})`;
             case 'CODE':
+                // Only handle if not inside a PRE (which handles its own CODE)
                 if (!this._findParentElement(node, 'PRE')) {
                     let codeContent = node.textContent.trim();
-                    if (options && options.inTableCell) {
+                    if (options && options.inTableCell) { // Escape pipes if in table cell
                         codeContent = codeContent.replace(/\|/g, '\\|');
                     }
                     return `\`${codeContent}\``;
                 }
-                return '';
+                return ''; // Handled by PRE
             case 'P':
             case 'UL': case 'OL':
             case 'BLOCKQUOTE':
             case 'PRE':
             case 'H1': case 'H2': case 'H3':
             case 'HR':
-            case 'DIV':
+            case 'DIV': // Generic block container
                 if (options && options.inTableCell) {
+                    // For complex content within table cells, serialize to HTML,
+                    // which _cellContentToMarkdown will then attempt to simplify or keep as HTML.
                     return this._nodeToHtmlForTableCell(node);
                 }
+                // Standard block element handling
                 if (node.nodeName === 'P') {
                     const pParent = node.parentNode;
+                    // Check if P is directly inside LI or BLOCKQUOTE for different newline handling
                     const isInsideListItemOrBlockquote = pParent && (pParent.nodeName === 'LI' || pParent.nodeName === 'BLOCKQUOTE');
                     let pContent = this._processInlineContainerRecursive(node, options).trim();
+
                     if (isInsideListItemOrBlockquote) {
+                        // Less aggressive newlines if P is part of a list item or blockquote content
                         return pContent.replace(/\n\s*\n/g, '\n').trim() + (pContent ? '\n' : '');
                     }
+                    // Standard paragraph, ensure double newline after if content exists
                     return pContent ? `${pContent}\n\n` : '';
                 }
                 if (node.nodeName === 'UL' || node.nodeName === 'OL') {
                     let listMd = this._listToMarkdownRecursive(node, "", node.nodeName, 1, options);
+                    // Ensure list block ends with double newline if it has content
                     if (listMd.trim().length > 0 && !listMd.endsWith('\n\n')) {
-                        if (!listMd.endsWith('\n')) listMd += '\n';
-                        listMd += '\n';
+                        if (!listMd.endsWith('\n')) listMd += '\n'; // Ensure at least one newline
+                        listMd += '\n'; // Add the second newline for block spacing
                     }
                     return listMd;
                 }
                 if (node.nodeName === 'BLOCKQUOTE') {
                     const quoteContentRaw = this._processInlineContainerRecursive(node, options);
-                    const quoteLines = quoteContentRaw.split('\n').map(line => line.trim());
-                    const nonEmptyLines = quoteLines.filter(line => line.length > 0);
-                    return nonEmptyLines.map(line => `> ${line}`).join('\n') + '\n\n';
+                    const quoteLines = quoteContentRaw.split('\n').map(line => line.trim()); // Trim each line
+                    const nonEmptyLines = quoteLines.filter(line => line.length > 0); // Remove empty lines
+                    return nonEmptyLines.map(line => `> ${line}`).join('\n') + '\n\n'; // Add prefix and double newline
                 }
                 if (node.nodeName === 'PRE') {
                     if (node.firstChild && node.firstChild.nodeName === 'CODE') {
                         const codeElement = node.firstChild;
                         const langMatch = codeElement.className.match(/language-(\S+)/);
                         const lang = langMatch ? langMatch[1] : '';
-                        let preContent = codeElement.textContent;
-                        if (preContent.length > 0 && !preContent.endsWith('\n')) preContent += '\n';
+                        let preContent = codeElement.textContent; // Raw text content
+                        if (preContent.length > 0 && !preContent.endsWith('\n')) preContent += '\n'; // Ensure trailing newline
                         return `\`\`\`${lang}\n${preContent}\`\`\`\n\n`;
                     }
+                    // Fallback for PRE without a CODE child (less common for Markdown sources)
                     let preTextContent = node.textContent;
                     if (preTextContent.length > 0 && !preTextContent.endsWith('\n')) preTextContent += '\n';
                     return `\`\`\`\n${preTextContent}\`\`\`\n\n`;
@@ -1955,38 +2233,45 @@ class MarkdownWYSIWYG {
                     return `${'#'.repeat(parseInt(node.nodeName[1]))} ${this._processInlineContainerRecursive(node, options).trim()}\n\n`;
                 }
                 if (node.nodeName === 'HR') {
-                    return '\n---\n\n';
+                    return '\n---\n\n'; // Ensure HR is on its own lines
                 }
                 if (node.nodeName === 'DIV') {
+                    // Treat DIV like a paragraph unless it's the editor area itself
                     const divContent = this._processInlineContainerRecursive(node, options).trim();
-                    if (node.classList.contains('md-editable-area')) return divContent;
-                    return divContent ? `${divContent}\n\n` : '';
+                    if (node.classList.contains('md-editable-area')) return divContent; // Root editor, just content
+                    return divContent ? `${divContent}\n\n` : ''; // Generic div as block
                 }
                 break;
 
             case 'TABLE':
                 let tableMarkdown = '';
                 const tHeadNode = node.querySelector('thead');
-                const tBodyNode = node.querySelector('tbody') || node;
+                const tBodyNode = node.querySelector('tbody') || node; // Use node itself if no tbody
                 let colCount = 0;
                 let headerMdContent = '';
                 let bodyMdContent = '';
+
+                // Process THEAD
                 if (tHeadNode) {
                     Array.from(tHeadNode.querySelectorAll('tr')).forEach(headerRowNode => {
                         const headerCells = Array.from(headerRowNode.querySelectorAll('th, td'))
-                            .map(cell => this._cellContentToMarkdown(cell));
+                            .map(cell => this._cellContentToMarkdown(cell)); // Use specific cell to MD
                         if (headerCells.length > 0) {
                             headerMdContent += `| ${headerCells.join(' | ')} |\n`;
                             if (colCount === 0) colCount = headerCells.length;
                         }
                     });
                 }
+
+                // Attempt to infer header from TBODY if no THEAD or THEAD was empty
                 let firstTBodyRowUsedAsHeader = false;
                 if (colCount === 0 && tBodyNode) {
                     const firstRow = tBodyNode.querySelector('tr');
                     if (firstRow) {
+                        // Heuristic: if first row cells are TH or contain only STRONG/B
                         const isLikelyHeader = Array.from(firstRow.children).some(cell => cell.nodeName === 'TH') ||
                             (Array.from(firstRow.children).every(cell => cell.children.length === 1 && (cell.firstElementChild.nodeName === 'STRONG' || cell.firstElementChild.nodeName === 'B')));
+
                         if (isLikelyHeader) {
                             const potentialHeaderCells = Array.from(firstRow.querySelectorAll('th, td'))
                                 .map(cell => this._cellContentToMarkdown(cell));
@@ -1998,56 +2283,71 @@ class MarkdownWYSIWYG {
                         }
                     }
                 }
+
+                // Fallback column count if still zero (e.g., table with no header row)
                 if (colCount === 0 && tBodyNode) {
                     const firstDataRow = tBodyNode.querySelector('tr');
                     if (firstDataRow) {
                         colCount = firstDataRow.querySelectorAll('td, th').length;
                     }
                 }
+                 // If absolutely no way to determine columns or header, fallback to just dumping content
                 if (colCount === 0 && headerMdContent.trim() === '') {
                     let fallbackContent = '';
                     Array.from(node.querySelectorAll('tr')).forEach(trNode => {
-                        Array.from(trNode.querySelectorAll('th, td')).forEach(cellNode => {
-                            fallbackContent += this._nodeToMarkdownRecursive(cellNode, { ...options, inTableCell: false });
+                         Array.from(trNode.querySelectorAll('th, td')).forEach(cellNode => {
+                            fallbackContent += this._nodeToMarkdownRecursive(cellNode, {...options, inTableCell: false }); // Process children as normal blocks
                         });
                     });
                     return fallbackContent.trim() ? fallbackContent.trim() + '\n\n' : '';
                 }
+
+
                 tableMarkdown = headerMdContent;
+                // Add separator line if there was a header or we have columns
                 if (headerMdContent.trim() !== '' || colCount > 0) {
                     tableMarkdown += `|${' --- |'.repeat(colCount)}\n`;
                 }
+
+                // Process TBODY
                 Array.from(tBodyNode.querySelectorAll('tr')).forEach((bodyRowNode, index) => {
-                    if (firstTBodyRowUsedAsHeader && index === 0) return;
+                    if (firstTBodyRowUsedAsHeader && index === 0) return; // Skip if used as header
+
                     const bodyCellsHtml = Array.from(bodyRowNode.querySelectorAll('td, th'));
                     let bodyCellsMd = bodyCellsHtml.map(cell => this._cellContentToMarkdown(cell));
+
+                    // Ensure the row has the correct number of cells for markdown
                     const finalCells = [];
                     for (let k = 0; k < colCount; k++) {
-                        finalCells.push(bodyCellsMd[k] || '');
+                        finalCells.push(bodyCellsMd[k] || ''); // Push empty string for missing cells
                     }
                     bodyMdContent += `| ${finalCells.join(' | ')} |\n`;
                 });
                 tableMarkdown += bodyMdContent;
-                return tableMarkdown.trim() ? tableMarkdown.trim() + '\n\n' : '';
-            case 'LI':
-                return this._processInlineContainerRecursive(node, options).trim();
-            default:
+                return tableMarkdown.trim() ? tableMarkdown.trim() + '\n\n' : ''; // Ensure trailing newlines for block
+
+            case 'LI': // List items are handled by _listToMarkdownRecursive, this is for LI content
+                return this._processInlineContainerRecursive(node, options).trim(); // Process LI content
+
+            default: // For unknown elements, try to process their children
                 if (node.childNodes && node.childNodes.length > 0) {
                     return this._processInlineContainerRecursive(node, options);
                 }
+                // If no children, or unhandled, return its text content, applying same rules as #text
                 let defaultText = (node.textContent || '');
-                if (!(options && options.inTableCell) && !this._findParentElement(node, 'PRE')) {
+                if (!(options && options.inTableCell) && !this._findParentElement(node, 'PRE') && !this._findParentElement(node, 'CODE')) {
                     defaultText = defaultText.replace(/  +/g, ' ');
                 }
                 if (options && options.inTableCell) {
                     defaultText = defaultText.replace(/\|/g, '\\|');
-                    if (!this._findParentElement(node, 'PRE')) {
-                        defaultText = defaultText.replace(/\n/g, '<br>');
+                    if (!this._findParentElement(node, 'PRE') && !this._findParentElement(node, 'CODE')) {
+                       defaultText = defaultText.replace(/\n/g, '<br>');
                     }
                 }
                 return defaultText;
         }
     }
+
 
     getValue() {
         if (this.currentMode === 'markdown') {
@@ -2088,8 +2388,16 @@ class MarkdownWYSIWYG {
             this.contextualTableToolbar.parentNode.removeChild(this.contextualTableToolbar);
             this.contextualTableToolbar = null;
         }
+        if (this.imageDialog && this.imageDialog.parentNode) { // Destroy image dialog
+            this.imageDialog.parentNode.removeChild(this.imageDialog);
+            this.imageDialog = null;
+            this.imageUrlInput = null;
+            this.imageAltInput = null;
+        }
+
         this.savedRangeInfo = null;
         this.currentTableSelectionInfo = null;
+
 
         if (this._boundListeners.handleSelectionChange) {
             document.removeEventListener('selectionchange', this._boundListeners.handleSelectionChange);

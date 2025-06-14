@@ -349,6 +349,12 @@
     height: 16px;
 }
 
+.md-editable-area.drag-over {
+    outline: 2px dashed #007bff;
+    outline-offset: -3px; /* Adjust based on padding, -2px might be too close with 15px padding */
+    background-color: #f0f8ff; /* Light blueish background for drop zone indication */
+}
+
 .md-image-dialog {
     padding: 20px;
     border: 1px solid #ccc;

@@ -1,6 +1,6 @@
 {
   "name": "@celsowm/markdown-wysiwyg",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A simple Markdown WYSIWYG editor with dual-mode editing, toolbar and smart conversion.",
   "main": "dist/editor.js",
   "style": "dist/editor.css",

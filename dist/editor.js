@@ -251,10 +251,7 @@ class MarkdownWYSIWYG {
             let prefix = "";
             let suffix = "\n";
             if (start > 0 && textValue[start - 1] !== '\n') {
-                prefix = "\n";
-                if (start > 1 && textValue[start - 2] !== '\n') {
-                    prefix = "\n\n";
-                }
+                prefix = "\n\n";
             } else if (start > 0 && textValue[start - 1] === '\n') {
                 if (start > 1 && textValue[start - 2] !== '\n') {
                     prefix = "\n";
@@ -459,7 +456,7 @@ class MarkdownWYSIWYG {
     _createHeadingMenu() {
         this.headingMenu = document.createElement('div');
         this.headingMenu.classList.add('md-heading-menu');
-        
+
         const headingOptions = [
             { label: 'Parágrafo', level: 0 },
             { label: 'Cabeçalho 1', level: 1 },
@@ -484,24 +481,37 @@ class MarkdownWYSIWYG {
 
         this.editorWrapper.appendChild(this.headingMenu);
     }
+    // MODIFICADO: Lógica para restaurar seleção antes de aplicar o heading
     _applyHeading(level) {
         const tagName = `H${level}`;
         const mdPrefix = `${'#'.repeat(level)} `;
 
         if (this.currentMode === 'wysiwyg') {
             this.editableArea.focus();
+
+            // ADICIONADO: Restaurar a seleção antes de executar o comando
+            if (this.savedRangeInfo instanceof Range) {
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(this.savedRangeInfo);
+            }
+
             document.execCommand('formatBlock', false, level > 0 ? tagName : 'P');
+
+            // ADICIONADO: Limpar a seleção salva após o uso
+            this.savedRangeInfo = null;
+
             this._finalizeUpdate(this.editableArea.innerHTML);
         } else {
             this.markdownArea.focus();
             const textarea = this.markdownArea;
             const textValue = textarea.value;
             const start = textarea.selectionStart;
-            
+
             let lineStartIndex = textValue.lastIndexOf('\n', start - 1) + 1;
             const lineEndIndex = textValue.indexOf('\n', lineStartIndex);
             const currentLine = textValue.substring(lineStartIndex, lineEndIndex === -1 ? textValue.length : lineEndIndex);
-            
+
             const existingHeaderMatch = currentLine.match(/^(#+\s)/);
             let newLine = currentLine;
             let diff = 0;
@@ -517,22 +527,34 @@ class MarkdownWYSIWYG {
                     diff = -existingPrefix.length;
                 }
             } else if (level > 0) {
-                 newLine = mdPrefix + currentLine;
-                 diff = mdPrefix.length;
+                newLine = mdPrefix + currentLine;
+                diff = mdPrefix.length;
             }
-            
+
             textarea.value = textValue.substring(0, lineStartIndex) + newLine + textValue.substring(lineEndIndex === -1 ? textValue.length : lineEndIndex);
             textarea.setSelectionRange(start + diff, start + diff);
             this._finalizeUpdate(textarea.value);
         }
     }
+    // MODIFICADO: Adicionado salvamento da seleção ao abrir o menu
     _showHeadingMenu(buttonElement) {
         if (this.headingMenu.style.display === 'block') return;
+
+        // ADICIONADO: Salvar a seleção atual para restaurar depois
+        if (this.currentMode === 'wysiwyg') {
+            this.editableArea.focus();
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                this.savedRangeInfo = selection.getRangeAt(0).cloneRange();
+            } else {
+                this.savedRangeInfo = null;
+            }
+        }
 
         // Update active item in menu
         const items = this.headingMenu.querySelectorAll('.md-heading-menu-item');
         items.forEach(item => item.classList.remove('active'));
-        
+
         let currentLevel = 0; // 0 for paragraph
         if (this.currentMode === 'wysiwyg') {
             const selection = window.getSelection();
@@ -547,7 +569,7 @@ class MarkdownWYSIWYG {
                         currentLevel = parseInt(match[1], 10);
                         break;
                     }
-                    if(blockElement.nodeName === 'P') break;
+                    if (blockElement.nodeName === 'P') break;
                     blockElement = blockElement.parentNode;
                 }
             }
@@ -572,7 +594,7 @@ class MarkdownWYSIWYG {
         const editorRect = this.editorWrapper.getBoundingClientRect();
         this.headingMenu.style.top = `${buttonRect.bottom - editorRect.top + 5}px`;
         this.headingMenu.style.left = `${buttonRect.left - editorRect.left}px`;
-        
+
         const menuRect = this.headingMenu.getBoundingClientRect();
         if (menuRect.right > window.innerWidth - 10) {
             this.headingMenu.style.left = `${window.innerWidth - menuRect.width - 10 - editorRect.left}px`;
@@ -585,9 +607,14 @@ class MarkdownWYSIWYG {
         document.addEventListener('click', this._boundListeners.closeHeadingMenuOnClickOutside, true);
         document.addEventListener('keydown', this._boundListeners.closeHeadingMenuOnEsc, true);
     }
+    // MODIFICADO: Limpar a seleção salva ao fechar o menu
     _hideHeadingMenu() {
         if (!this.headingMenu || this.headingMenu.style.display === 'none') return;
         this.headingMenu.style.display = 'none';
+
+        // ADICIONADO: Limpar a seleção salva ao fechar o menu
+        this.savedRangeInfo = null;
+
         document.removeEventListener('click', this._boundListeners.closeHeadingMenuOnClickOutside, true);
         if (this._boundListeners.closeHeadingMenuOnEsc) {
             document.removeEventListener('keydown', this._boundListeners.closeHeadingMenuOnEsc, true);
@@ -918,7 +945,16 @@ class MarkdownWYSIWYG {
                         blockElement = blockElement.parentNode;
                     }
                 } else {
-                    isActive = document.queryCommandState(btnConfig.execCommand);
+                    const selection = window.getSelection();
+                    if (btnConfig.id === 'bold') {
+                        isActive = !!this._findParentElement(selection.anchorNode, ['B', 'STRONG']);
+                    } else if (btnConfig.id === 'italic') {
+                        isActive = !!this._findParentElement(selection.anchorNode, ['I', 'EM']);
+                    } else if (btnConfig.id === 'strikethrough') {
+                        isActive = !!this._findParentElement(selection.anchorNode, ['S', 'STRIKE', 'DEL']);
+                    } else {
+                        isActive = document.queryCommandState(btnConfig.execCommand);
+                    }
                 }
             } else if (btnConfig.id === 'link') {
                 let parentNode = selection.anchorNode;

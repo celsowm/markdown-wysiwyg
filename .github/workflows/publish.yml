@@ -1,0 +1,52 @@
+name: Publish to npm
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: npm-publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Update npm
+        run: npm install --global npm@latest
+
+      - name: Verify package version
+        shell: bash
+        run: |
+          PACKAGE_VERSION="$(node -p "require('./package.json').version")"
+          echo "Package version: ${PACKAGE_VERSION}"
+
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            TAG_VERSION="${GITHUB_REF_NAME#v}"
+            if [[ "${TAG_VERSION}" != "${PACKAGE_VERSION}" ]]; then
+              echo "Tag version ${TAG_VERSION} does not match package.json version ${PACKAGE_VERSION}."
+              exit 1
+            fi
+          fi
+
+      - name: Validate package contents
+        run: npm pack --dry-run
+
+      - name: Publish
+        run: npm publish --access public

@@ -1,3 +1,5 @@
+import { marked } from 'marked';
+
 const ICON_HEADING_MENU = `<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M6 4V20 M18 4V20 M6 12H18"/></svg>`;
 const ICON_HEADING = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 12h12M6 20V4M10 20V4M14 20V4M18 20V4"/></svg>`;
 const ICON_BOLD = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></svg>`;
@@ -2629,3 +2631,6 @@ class MarkdownWYSIWYG {
         this.redoStack = null;
     }
 }
+
+export { MarkdownWYSIWYG };
+export default MarkdownWYSIWYG;

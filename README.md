@@ -37,11 +37,37 @@ A versatile JavaScript-based Markdown editor that offers a seamless experience b
   - `Ctrl+Z` / `Cmd+Z`: Undo
   - `Ctrl+Y` / `Ctrl+Shift+Z`: Redo
 - **Lightweight and self-contained**
+- Built-in toolbar button titles/tooltips are in English.
 
 ## Demo
 
 You can run the `index.html` file in your browser to see a live demonstration of the editor.  
 Or online here: [demo](https://celsowm.github.io/markdown-wysiwyg/)
+
+## NPM / ES Modules
+
+Install the editor and its Markdown parser peer dependency:
+
+```bash
+npm install @celsowm/markdown-wysiwyg marked
+```
+
+Then import the editor and stylesheet:
+
+```js
+import MarkdownWYSIWYG from '@celsowm/markdown-wysiwyg';
+import '@celsowm/markdown-wysiwyg/dist/editor.css';
+
+const editor = new MarkdownWYSIWYG('myMarkdownEditor', {
+  initialValue: '## Hello from ESM'
+});
+```
+
+A named export is also available:
+
+```js
+import { MarkdownWYSIWYG } from '@celsowm/markdown-wysiwyg';
+```
 
 ## Installation / Setup
 
@@ -97,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
 ## Public Methods
 
 - `getValue()`: Returns the current Markdown content as string.
-- `setValue(markdownString, isInitialSetup)`: Sets the content of the editor.
+- `setValue(markdownString, isInitialSetup)`: Sets the content of the editor. Public calls trigger `onUpdate`; internal initial setup does not.
 - `switchToMode(mode)`: Switches mode: `'wysiwyg'` or `'markdown'`.
 - `destroy()`: Destroys the editor and cleans up listeners.
 

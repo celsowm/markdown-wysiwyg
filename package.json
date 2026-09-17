@@ -1,8 +1,8 @@
 {
   "name": "@celsowm/markdown-wysiwyg",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "A simple Markdown WYSIWYG editor with dual-mode editing, toolbar and smart conversion.",
-  "main": "dist/editor.js",
+  "main": "./dist/editor.esm.js",
   "style": "dist/editor.css",
   "type": "module",
   "keywords": [
@@ -23,5 +23,15 @@
   "bugs": {
     "url": "https://github.com/celsowm/markdown-wysiwyg/issues"
   },
-  "homepage": "https://github.com/celsowm/markdown-wysiwyg#readme"
+  "homepage": "https://github.com/celsowm/markdown-wysiwyg#readme",
+  "module": "./dist/editor.esm.js",
+  "exports": {
+    ".": "./dist/editor.esm.js",
+    "./dist/editor.css": "./dist/editor.css",
+    "./editor.css": "./dist/editor.css",
+    "./package.json": "./package.json"
+  },
+  "peerDependencies": {
+    "marked": ">=12.0.0"
+  }
 }

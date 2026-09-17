@@ -1,0 +1,55 @@
+name: Refine toolbar icons
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/refine-toolbar-icons.yml
+
+permissions:
+  contents: write
+
+jobs:
+  refine:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Refine strikethrough and ordered-list icons
+        shell: python {0}
+        run: |
+          from pathlib import Path
+
+          replacements = {
+              'const ICON_STRIKETHROUGH = createIcon(`<path d="M16 5.5A5 5 0 0 0 12.5 4H10a4 4 0 0 0-3.8 5.25"/><path d="M8 15a4 4 0 0 0 4 5h2a4 4 0 0 0 3.85-5"/><path d="M4 12h16"/>`);':
+              'const ICON_STRIKETHROUGH = createIcon(`<path d="M16 4H9a3 3 0 0 0-2.83 4"/><path d="M14 12a4 4 0 0 1 0 8H6"/><path d="M4 12h16"/>`);',
+              'const ICON_OL = createIcon(`<path d="M3.5 5.5h1V9M3.5 9h2"/><path d="M3.5 12.5a1.25 1.25 0 1 1 2 1l-2 2h2"/><path d="M3.5 18h1.25a1 1 0 1 1 0 2H3.5M8 6h12M8 13h12M8 19h12"/>`);':
+              'const ICON_OL = createIcon(`<path d="M4 5h1v4M4 9h2"/><path d="M10 6h10M10 12h10M10 18h10"/><circle cx="5" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="5" cy="18" r="1" fill="currentColor" stroke="none"/>`);',
+          }
+
+          for file_name in ('dist/editor.js', 'dist/editor.esm.js'):
+              path = Path(file_name)
+              text = path.read_text(encoding='utf-8')
+              for old, new in replacements.items():
+                  if old not in text:
+                      raise SystemExit(f'target icon definition not found in {file_name}')
+                  text = text.replace(old, new, 1)
+              path.write_text(text, encoding='utf-8')
+
+      - name: Validate JavaScript
+        run: |
+          node --check dist/editor.js
+          node --check dist/editor.esm.js
+
+      - name: Commit changes and remove temporary workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/refine-toolbar-icons.yml
+          git add dist/editor.js dist/editor.esm.js
+          git commit -m "style: refine strikethrough and ordered-list icons"
+          git push origin HEAD:main

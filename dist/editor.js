@@ -4,10 +4,10 @@ const ICON_HEADING_MENU = createIcon(`<path d="M4 5v14M11 5v14M4 12h7"/><path d=
 const ICON_HEADING = createIcon(`<path d="M4 5v14M11 5v14M4 12h7"/><path d="M17 8h2v9M16 17h5"/>`);
 const ICON_BOLD = createIcon(`<path d="M7 4h6a4 4 0 0 1 0 8H7z"/><path d="M7 12h7a4 4 0 0 1 0 8H7z"/>`);
 const ICON_ITALIC = createIcon(`<path d="M10 4h9M5 20h9M15 4 9 20"/>`);
-const ICON_STRIKETHROUGH = createIcon(`<path d="M16 5.5A5 5 0 0 0 12.5 4H10a4 4 0 0 0-3.8 5.25"/><path d="M8 15a4 4 0 0 0 4 5h2a4 4 0 0 0 3.85-5"/><path d="M4 12h16"/>`);
+const ICON_STRIKETHROUGH = createIcon(`<path d="M16 4H9a3 3 0 0 0-2.83 4"/><path d="M14 12a4 4 0 0 1 0 8H6"/><path d="M4 12h16"/>`);
 const ICON_LINK = createIcon(`<path d="m10 13.5-1.5 1.5a4 4 0 0 1-5.7-5.6l3-3a4 4 0 0 1 5.7 0"/><path d="m14 10.5 1.5-1.5a4 4 0 0 1 5.7 5.6l-3 3a4 4 0 0 1-5.7 0"/><path d="m8.5 15.5 7-7"/>`);
 const ICON_UL = createIcon(`<circle cx="4" cy="6" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1" fill="currentColor" stroke="none"/><path d="M8 6h12M8 12h12M8 18h12"/>`);
-const ICON_OL = createIcon(`<path d="M3.5 5.5h1V9M3.5 9h2"/><path d="M3.5 12.5a1.25 1.25 0 1 1 2 1l-2 2h2"/><path d="M3.5 18h1.25a1 1 0 1 1 0 2H3.5M8 6h12M8 13h12M8 19h12"/>`);
+const ICON_OL = createIcon(`<path d="M4 5h1v4M4 9h2"/><path d="M10 6h10M10 12h10M10 18h10"/><circle cx="5" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="5" cy="18" r="1" fill="currentColor" stroke="none"/>`);
 const ICON_OUTDENT = createIcon(`<path d="M10 6h10M10 12h10M10 18h10"/><path d="m7 9-3 3 3 3M4 12h5"/>`);
 const ICON_INDENT = createIcon(`<path d="M4 6h10M4 12h10M4 18h10"/><path d="m17 9 3 3-3 3M15 12h5"/>`);
 const ICON_BLOCKQUOTE = createIcon(`<path d="M9 6H5a2 2 0 0 0-2 2v4h6v2a4 4 0 0 1-4 4"/><path d="M21 6h-4a2 2 0 0 0-2 2v4h6v2a4 4 0 0 1-4 4"/>`);

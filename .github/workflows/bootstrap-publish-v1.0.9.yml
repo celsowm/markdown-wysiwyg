@@ -1,0 +1,34 @@
+name: Bootstrap publish v1.0.9
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/bootstrap-publish-v1.0.9.yml
+
+permissions:
+  contents: write
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Remove bootstrap workflow and create release tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git rm .github/workflows/bootstrap-publish-v1.0.9.yml
+          git commit -m "chore: remove v1.0.9 publish bootstrap"
+          git push origin HEAD:main
+
+          git tag v1.0.9
+          git push origin v1.0.9

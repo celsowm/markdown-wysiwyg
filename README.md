@@ -36,6 +36,9 @@ A versatile JavaScript-based Markdown editor that offers a seamless experience b
   - `Tab` / `Shift+Tab`: Indent/outdent, table cell nav
   - `Ctrl+Z` / `Cmd+Z`: Undo
   - `Ctrl+Y` / `Ctrl+Shift+Z`: Redo
+  - `Ctrl+b`: Bold
+  - `Ctrl+i`: Italic
+  - `Ctrl+k`: Insert Link
 - **Lightweight and self-contained**
 - Built-in toolbar button titles/tooltips are in English.
 

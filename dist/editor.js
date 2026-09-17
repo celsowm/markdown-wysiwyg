@@ -1285,11 +1285,28 @@ class MarkdownWYSIWYG {
                     document.execCommand('insertText', false, '    ');
                 }
             }
-        } else if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-            e.preventDefault(); this._undo();
-        } else if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))) {
-            e.preventDefault(); this._redo();
+        } else if (e.ctrlKey || e.metaKey) {
+            if (e.key === 'z') {
+                e.preventDefault(); this._undo();
+            } else if ((e.key === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))) {
+                e.preventDefault(); this._redo();
+            } else if (e.key === 'b') {
+                e.preventDefault();
+                const boldButton = this._findButtonById('bold');
+                if (boldButton) this._handleToolbarClick(boldButton, this.toolbar.querySelector(`.md-toolbar-button-bold`));
+            } else if (e.key === 'i') {
+                e.preventDefault();
+                const italicButton = this._findButtonById('italic');
+                if (italicButton) this._handleToolbarClick(italicButton, this.toolbar.querySelector(`.md-toolbar-button-italic`));
+            } else if (e.key === 'k') {
+                e.preventDefault();
+                const linkButton = this._findButtonById('link');
+                if (linkButton) this._handleToolbarClick(linkButton, this.toolbar.querySelector(`.md-toolbar-button-link`));
+            }
         }
+    }
+    _findButtonById(id) {
+        return this.options.buttons.find(btn => btn.id === id);
     }
     _findParentElement(node, tagNameOrNames) {
         if (!node) return null;

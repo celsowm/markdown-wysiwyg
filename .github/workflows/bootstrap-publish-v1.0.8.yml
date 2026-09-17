@@ -1,0 +1,47 @@
+name: Bootstrap publish v1.0.8
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/bootstrap-publish-v1.0.8.yml'
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create v1.0.8 tag
+        shell: bash
+        run: |
+          if git ls-remote --exit-code --tags origin refs/tags/v1.0.8 >/dev/null 2>&1; then
+            echo 'Tag v1.0.8 already exists.'
+          else
+            gh api --method POST \
+              repos/${GITHUB_REPOSITORY}/git/refs \
+              -f ref='refs/tags/v1.0.8' \
+              -f sha='${{ github.sha }}'
+          fi
+
+      - name: Dispatch trusted npm publish workflow
+        run: gh workflow run publish.yml --ref v1.0.8
+
+      - name: Remove bootstrap workflow
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/bootstrap-publish-v1.0.8.yml
+          git commit -m 'ci: remove npm publish bootstrap workflow'
+          git push origin HEAD:main

@@ -1,0 +1,43 @@
+name: Dispatch publish v1.0.10
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/dispatch-publish-v1.0.10.yml
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create v1.0.10 tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          git tag v1.0.10 8ca8faae01e1d503525da4722fc0b647405a8a39
+          git push origin v1.0.10
+
+      - name: Dispatch trusted npm publish workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run publish.yml --ref v1.0.10
+
+      - name: Remove bootstrap workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/dispatch-publish-v1.0.10.yml
+          git commit -m "chore: remove v1.0.10 publish dispatcher"
+          git push origin HEAD:main

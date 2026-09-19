@@ -1,6 +1,8 @@
 
 # Markdown WYSIWYG Editor
 
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/L4L11VB7JN)
+
 A versatile JavaScript-based Markdown editor that offers a seamless experience by allowing users to switch between a What-You-See-Is-What-You-Get (WYSIWYG) visual editor and a raw Markdown text editor. It comes with a customizable toolbar, undo/redo functionality, and intelligent Markdown-to-HTML (and vice-versa) conversion.
 
 ![image](https://github.com/user-attachments/assets/26d74f49-9094-4336-a951-71919388145d)
